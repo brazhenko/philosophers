@@ -6,16 +6,44 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-# define DELTA					715
-# define DEFAULT_TS_UPDATE 		5000
-# define DEFAULT_SLEEP_TIME_MCS	DEFAULT_TS_UPDATE - DELTA
+# define DEFAULT_SLEEP_TIME_MS	5
+
+size_t	timeval_to_size_t(struct timeval timeval)
+{
+	return (timeval.tv_sec * 1000 + (size_t)(timeval.tv_usec * 0.001));
+}
+
+size_t	get_current_time(void)
+{
+	struct timeval	timeval;
+
+	gettimeofday(&timeval, NULL);
+	return (timeval_to_size_t(timeval));
+}
+
+void	ms_usleep(size_t sleep_time_in_ms)
+{
+	struct timeval	start_time_tv;
+	size_t			start_time;
+
+	gettimeofday(&start_time_tv, NULL);
+	start_time = timeval_to_size_t(start_time_tv);
+	while (1)
+	{
+		usleep(10);
+		if (get_current_time() - start_time >= sleep_time_in_ms)
+			return ;
+	}
+}
+typedef __darwin_suseconds_t t_usec;
+
 
 typedef struct
 {
     size_t	number_of_philos;
-    size_t	time_to_die;
-    size_t	time_to_eat;
-    size_t	time_to_sleep;
+	t_usec	time_to_die;
+    t_usec	time_to_eat;
+	t_usec	time_to_sleep;
     bool	yes;
 	size_t	number_of_times_each_philo_must_eat;
 
@@ -25,11 +53,11 @@ typedef struct
 t_context	context;
 
 
-typedef __darwin_suseconds_t t_usec;
+
 
 enum e_status
 {
-	Waiting = 0,
+	Thinking = 0,
 	Eating,
 	Sleeping,
 	Dead /* Unused */
@@ -39,6 +67,7 @@ typedef struct
 {
 	t_usec	timestamp;
 	t_usec	last_time_ate;
+	t_usec	end_of_current_action;
 	enum e_status	status;
 }			t_philo_context;
 
@@ -64,11 +93,11 @@ int	parse_size_t(const char *str, size_t *out)
 }
 
 
-static int CAS(int *ptr, int oldVal, int newVal)
+static int	CAS(int *ptr, int oldVal, int newVal)
 {
-	unsigned char ret;
+	unsigned char	ret;
 
-	__asm__ __volatile__ (
+	__asm__ __volatile__(
 	"  lock\n"
 	"  cmpxchgl %[newval], %[mem]\n"
 	"  sete %0\n"
@@ -82,34 +111,45 @@ static int CAS(int *ptr, int oldVal, int newVal)
 void* philo_life(void *a)
 {
 	t_philo_context		ctx;
+	const size_t		id = (size_t)a;
 
 	memset(&ctx, 0x0, sizeof ctx);
 	printf("Philo alive!\n");
-	while (1)
-	{
-		if (ctx.last_time_ate + context.time_to_die * 1000 <= ctx.timestamp)
-		{
-			write(STDIN_FILENO, "die x_X\n", 8);
-			return NULL;
-		}
-		if (ctx.status == Waiting)
-		{
-			// acquire mutexes
-			ctx.status = Eating;
-		}
-		else if (ctx.status == Eating)
-		{
 
+	while (true)
+	{
+		if (ctx.last_time_ate + context.time_to_die <= ctx.timestamp)
+		{
+			printf("[%7d][%2zu] died               (✖╭╮✖) \n", ctx.timestamp, id);
+			return (NULL);
+		}
+
+		if (ctx.status == Sleeping
+				&& ctx.end_of_current_action <= ctx.timestamp)
+		{
+			ctx.status = Thinking;
+			printf("[%7d][%3zu] is thinking      ¯\\_(ツ)_/¯ \n", ctx.timestamp, id);
+		}
+		if (ctx.status == Eating
+				&& ctx.end_of_current_action <= ctx.timestamp)
+		{
 			// release mutexes
 			ctx.status = Sleeping;
+			ctx.end_of_current_action = ctx.timestamp + context.time_to_sleep;
+			printf("[%7d][%3zu] is sleeping      (ー。ー) ☽ \n", ctx.timestamp, id);
 		}
-		else if (ctx.status == Sleeping)
+		if (ctx.status == Thinking)
 		{
-			ctx.status = Waiting;
+			printf("[%7d][%3zu] has taken a fork ʕ∗•ڡ•∗ʔ ─∈ \n", ctx.timestamp, id);
+			// acquire mutexes successfully
+			ctx.status = Eating;
+			ctx.last_time_ate = ctx.timestamp;
+			ctx.end_of_current_action = ctx.timestamp + context.time_to_eat;
+			printf("[%7d][%3zu] is eating        ( ˘▽˘)っ♨ \n", ctx.timestamp, id);
 		}
 
-		usleep(DEFAULT_SLEEP_TIME_MCS);
-		ctx.timestamp += DEFAULT_TS_UPDATE;
+		ms_usleep(DEFAULT_SLEEP_TIME_MS);
+		ctx.timestamp += DEFAULT_SLEEP_TIME_MS;
 	}
 }
 
@@ -126,7 +166,7 @@ static int	initialize_philos(t_context *ctx)
 	i = 0;
 	while (i < ctx->number_of_philos)
 	{
-		if (pthread_create(&ctx->philos[i], NULL, philo_life, NULL))
+		if (pthread_create(&ctx->philos[i], NULL, philo_life, (void*)i))
 		{
 			printf("Error on creating philo: %zu... exit :/\n", i);
 			return (EXIT_FAILURE);
@@ -149,15 +189,15 @@ static int	initialize_forks(t_context *ctx)
 int initialize_context(t_context *ctx, int argc, char **argv)
 {
 	memset(ctx, 0x0, sizeof *ctx);
-	if (argc < 5)
+	if (argc < 5 || 6 < argc)
 		return (EXIT_FAILURE);
 	if (parse_size_t(argv[1], &ctx->number_of_philos))
 		return (EXIT_FAILURE);
-	if (parse_size_t(argv[2], &ctx->time_to_die))
+	if (parse_size_t(argv[2], (size_t*)&ctx->time_to_die))
 		return (EXIT_FAILURE);
-	if (parse_size_t(argv[3], &ctx->time_to_eat))
+	if (parse_size_t(argv[3], (size_t*)&ctx->time_to_eat))
 		return (EXIT_FAILURE);
-	if (parse_size_t(argv[4], &ctx->time_to_sleep))
+	if (parse_size_t(argv[4], (size_t*)&ctx->time_to_sleep))
 		return (EXIT_FAILURE);
 	if (argc == 6)
 	{
@@ -188,5 +228,4 @@ int main(int argc, char **argv)
 		pthread_join(context.philos[i], NULL);
 		i++;
 	}
-
 }
