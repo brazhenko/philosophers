@@ -4,7 +4,7 @@
 
 #include <pthread.h>
 #include <stdio.h>
-unsigned char arr[64 * 64];
+unsigned char arr[64 * 64] __attribute__((aligned (64)));
 
 void *writer(void *a)
 {
@@ -33,9 +33,9 @@ int main()
 
 	
 	pthread_create(&a, NULL, reader, (void*)0);
-	pthread_create(&b, NULL, reader, (void*)0);
-	pthread_create(&c, NULL, reader, (void*)0);
-	pthread_create(&d, NULL, writer, (void*)0);
+	pthread_create(&b, NULL, reader, (void*)64);
+	pthread_create(&c, NULL, reader, (void*)128);
+	pthread_create(&d, NULL, writer, (void*)256);
 
 	printf("first -- %p\n", a); 
 	printf("first -- %p\n", d);
