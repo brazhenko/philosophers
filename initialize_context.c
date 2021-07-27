@@ -69,9 +69,9 @@ int initialize_context(t_context *ctx, int argc, char **argv)
 			return (EXIT_FAILURE);
 		ctx->yes = true;
 	}
-	if (initialize_philos(ctx))
-		return (EXIT_FAILURE);
 	if (initialize_forks(ctx))
+		return (EXIT_FAILURE);
+	if (initialize_philos(ctx))
 		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }

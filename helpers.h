@@ -5,6 +5,14 @@
 # include <stdbool.h>
 # include <sys/time.h>
 
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
 size_t	timeval_to_size_t(struct timeval timeval);
 size_t	get_current_time(void);
 void	ms_usleep(size_t sleep_time_in_ms);
