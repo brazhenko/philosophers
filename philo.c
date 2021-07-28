@@ -11,14 +11,18 @@ extern t_context	g_context;
 
 void 	philo_think(t_philo_context *ctx)
 {
-	const size_t	left_fork = ctx->id ? ctx->id - 1 : g_context.number_of_philos - 1;
-	const size_t	right_fork = ctx->id;
+	const size_t	left_fork = ctx->id;
+
+	const size_t	right_fork
+		= ctx->id == g_context.number_of_philos - 1 ? 0 : ctx->id + 1;
 	uint32_t		ts1;
 	uint32_t		ts2;
 
-	if (!fork_try_take_ts_sync(g_context.forks + MIN(left_fork, right_fork), &ts1))
+	if (!fork_try_take_ts_sync(g_context.forks + MIN(left_fork, right_fork),
+							&ts1, ctx->label))
 		return;
-	if (!fork_try_take_ts_sync(g_context.forks + MAX(left_fork, right_fork), &ts2))
+	if (!fork_try_take_ts_sync(g_context.forks + MAX(left_fork, right_fork),
+							&ts2, ctx->label))
 	{
 		fork_put_down(g_context.forks + MIN(left_fork, right_fork));
 		return;
@@ -36,8 +40,10 @@ void	philo_eat(t_philo_context *ctx)
 	const size_t	left_fork = ctx->id ? ctx->id - 1 : g_context.number_of_philos - 1;
 	const size_t	right_fork = ctx->id;
 
-	fork_put_down_ts_sync(g_context.forks + MAX(left_fork, right_fork), ctx->timestamp);
-	fork_put_down_ts_sync(g_context.forks + MIN(left_fork, right_fork), ctx->timestamp);
+	fork_put_down_ts_sync(g_context.forks + MAX(left_fork, right_fork),
+					   ctx->timestamp, ctx->label, g_context.number_of_philos);
+	fork_put_down_ts_sync(g_context.forks + MIN(left_fork, right_fork),
+						  ctx->timestamp, ctx->label, g_context.number_of_philos);
 	ctx->status = Sleeping;
 	ctx->end_of_current_action = ctx->timestamp + g_context.time_to_sleep;
 	enqueue(ctx->timestamp, Sleeping, ctx->id);
@@ -61,6 +67,10 @@ void*	philo_life(void *a)
 
 	memset(&ctx, 0x0, sizeof ctx);
 	ctx.id = (size_t)a;
+	ctx.label = (ctx.id & 0x1)
+			+ ((ctx.id + 1 == g_context.number_of_philos && (g_context.number_of_philos & 1)) << 1);
+//	printf("id: %zu, label: %llu\n", ctx.id, ctx.label);
+
 	enqueue(ctx.timestamp, Thinking, ctx.id);
 	while (true)
 	{
