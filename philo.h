@@ -5,7 +5,7 @@
 # include <sys/time.h>
 # include <stdbool.h>
 # include <pthread.h>
-# define DEFAULT_SLEEP_TIME_MS	10
+# define DEFAULT_SLEEP_TIME_MS	5
 
 enum e_status
 {

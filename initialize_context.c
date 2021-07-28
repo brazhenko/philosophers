@@ -71,6 +71,7 @@ int initialize_context(t_context *ctx, int argc, char **argv)
 	}
 	if (initialize_forks(ctx))
 		return (EXIT_FAILURE);
+	printf("[%7s][%3s][%15s]\n", "time", "id", "event");
 	if (initialize_philos(ctx))
 		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);

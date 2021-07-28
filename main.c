@@ -2,11 +2,12 @@
 #include "philo.h"
 #include "event_queue.h"
 #include <stdio.h>
-#include <stdbool.h>
+#include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
 
 t_context	g_context;
+
 int	initialize_context(t_context *ctx, int argc, char **argv);
 
 static void 	dump_event(struct s_philo_event* ev)
@@ -26,6 +27,20 @@ static void 	dump_event(struct s_philo_event* ev)
 	printf("[%7d][%3zu][%15s]\n", ev->ts, ev->philo_id, ev_type_string);
 }
 
+static int 	detach_all()
+{
+	int 	i;
+
+	i = 0;
+	while (i < g_context.number_of_philos)
+	{
+		if (pthread_detach(g_context.philos[i]))
+			return (EXIT_FAILURE);
+		i++;
+	}
+	return (EXIT_SUCCESS);
+}
+
 /*
  * Philosofers:
  * ./philo \
@@ -39,38 +54,23 @@ static void 	dump_event(struct s_philo_event* ev)
 
 int main(int argc, char **argv)
 {
-//	uint64_t  test = 0;
-//	int a = CAS(&test, 0, 1);
-//	printf("new: %llu, %d\n", test, a);
-//
-//	t_fork  fork;
-//	memset(&fork, 0, sizeof fork);
-//	int res = fork_try_take(&fork); // CAS(&fork.locked, 0, 1);;
-//
-//	ms_usleep(100);
-//	printf("res: %d, %llu\n", res, fork.locked);
-//	return 0;
-
-	int 	i;
 	struct s_philo_event	ev;
 
-	printf("Start\n");
+	memset(&ev, 0x0, sizeof ev);
 	if (initialize_context(&g_context, argc, argv))
 	{
-		printf("Error on parsing arguments... :/\n");
+		printf("Error on init context... :/\n");
 		return (EXIT_FAILURE);
 	}
-	i = 0;
-	while (i < g_context.number_of_philos)
+	if (detach_all())
 	{
-		pthread_detach(g_context.philos[i]);
-		i++;
+		printf("Error on detaching threads... :/\n");
+		return (EXIT_FAILURE);
 	}
-	while (true)
+	while (ev.ev_type != Died)
 	{
 		ev = deque();
 		dump_event(&ev);
-		if (ev.ev_type == Died) break;
 	}
 	return (EXIT_SUCCESS);
 }

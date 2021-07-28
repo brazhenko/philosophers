@@ -16,25 +16,19 @@ void 	philo_think(t_philo_context *ctx)
 	uint32_t		ts1;
 	uint32_t		ts2;
 
-	if (!fork_try_take(g_context.forks + MIN(left_fork, right_fork)))
+	if (!fork_try_take_ts_sync(g_context.forks + MIN(left_fork, right_fork), &ts1))
 		return;
-	if (!fork_try_take(g_context.forks + MAX(left_fork, right_fork)))
+	if (!fork_try_take_ts_sync(g_context.forks + MAX(left_fork, right_fork), &ts2))
 	{
-		fork_put_down(g_context.forks + MIN(left_fork, right_fork), ctx->timestamp);
+		fork_put_down(g_context.forks + MIN(left_fork, right_fork));
 		return;
 	}
-
-//	if (!fork_try_take_ts_sync(g_context.forks + MIN(left_fork, right_fork), &ts1))
-//		return;
-//	if (!fork_try_take_ts_sync(g_context.forks + MAX(left_fork, right_fork)))
-
-//	printf("[%7d][%3zu] has taken both forks ─∈ \n", ctx->timestamp, ctx->id);
-	// acquire mutexes successfully
+	// Syncing clocks
+	ctx->timestamp = MAX(ts1, ts2);
 	ctx->status = Eating;
 	ctx->last_time_ate = ctx->timestamp;
 	ctx->end_of_current_action = ctx->timestamp + g_context.time_to_eat;
 	enqueue(ctx->timestamp, Eating, ctx->id);
-//	printf("[%7d][%3zu] is eating        ( ˘▽˘)っ♨ \n", ctx->timestamp, ctx->id);
 }
 
 void	philo_eat(t_philo_context *ctx)
@@ -42,25 +36,22 @@ void	philo_eat(t_philo_context *ctx)
 	const size_t	left_fork = ctx->id ? ctx->id - 1 : g_context.number_of_philos - 1;
 	const size_t	right_fork = ctx->id;
 
-	fork_put_down(g_context.forks + MAX(left_fork, right_fork), ctx->timestamp);
-	fork_put_down(g_context.forks + MIN(left_fork, right_fork), ctx->timestamp);
+	fork_put_down_ts_sync(g_context.forks + MAX(left_fork, right_fork), ctx->timestamp);
+	fork_put_down_ts_sync(g_context.forks + MIN(left_fork, right_fork), ctx->timestamp);
 	ctx->status = Sleeping;
 	ctx->end_of_current_action = ctx->timestamp + g_context.time_to_sleep;
 	enqueue(ctx->timestamp, Sleeping, ctx->id);
-//	printf("[%7d][%3zu] is sleeping      (ー。ー) ☽ \n", ctx->timestamp, ctx->id);
 }
 
 void	philo_sleep(t_philo_context *ctx)
 {
 	ctx->status = Thinking;
 	enqueue(ctx->timestamp, Thinking, ctx->id);
-//	printf("[%7d][%3zu] is thinking      ¯\\_(ツ)_/¯ \n", ctx->timestamp, ctx->id);
 }
 
 void 	philo_die(t_philo_context *ctx)
 {
 	enqueue(ctx->timestamp, Died, ctx->id);
-//	printf("[%7d][%2zu] died               (✖╭╮✖) \n", ctx->timestamp, ctx->id);
 }
 
 void*	philo_life(void *a)

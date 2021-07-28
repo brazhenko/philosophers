@@ -31,12 +31,16 @@ void 	S(uint64_t *ptr, uint64_t new_val)
 
 int 	fork_try_take(t_fork *fork)
 {
-	return CAS(&fork->locked, 0ULL, 1LL);
+	const uint64_t data = fork->locked;
+
+	if (data & FORK_LOCKED)
+		return (0);
+	return CAS(&fork->locked, data, data | FORK_LOCKED);
 }
 
-void 	fork_put_down(t_fork *fork, uint32_t ts)
+void 	fork_put_down(t_fork *fork)
 {
-	S(&fork->locked, 0);
+	S(&fork->locked, fork->locked & ~FORK_LOCKED);
 }
 
 int 	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts)
