@@ -4,15 +4,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <pthread.h>
 
 t_context	g_context;
-
-int	initialize_context(t_context *ctx, int argc, char **argv);
 
 static void 	dump_event(struct s_philo_event* ev)
 {
 	const char *ev_type_string;
+	const char *event_color = ANSI_COLOR_RESET;
 
 	if (ev->ev_type == Thinking)
 		ev_type_string = "Thinking";
@@ -21,10 +19,16 @@ static void 	dump_event(struct s_philo_event* ev)
 	else if (ev->ev_type == Sleeping)
 		ev_type_string = "Sleeping";
 	else if (ev->ev_type == Died)
+	{
+		event_color = ANSI_COLOR_RED;
 		ev_type_string = "Died";
+	}
 	else
 		return;
-	printf("[%7d][%3zu][%15s]\n", ev->ts, ev->philo_id, ev_type_string);
+	printf("%4$s[%1$7d]%5$s[%2$3zu]%7$s[%3$15s]%6$s\n",
+		ev->ts, ev->philo_id, ev_type_string,
+		ANSI_COLOR_GREEN, ANSI_COLOR_YELLOW, ANSI_COLOR_RESET,
+		event_color);
 }
 
 /*
@@ -37,6 +41,8 @@ static void 	dump_event(struct s_philo_event* ev)
  * 		[number_of_times_each_philosopher_must_eat]
  *
  */
+
+int	initialize_context(t_context *ctx, int argc, char **argv);
 
 int main(int argc, char **argv)
 {

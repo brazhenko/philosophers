@@ -46,7 +46,6 @@ void 	fork_put_down(t_fork *fork)
 int 	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts)
 {
 	uint64_t	data;
-	uint64_t	new_data;
 	int 		res;
 
 	data = fork->locked;
