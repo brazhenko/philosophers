@@ -27,23 +27,9 @@ static void 	dump_event(struct s_philo_event* ev)
 	printf("[%7d][%3zu][%15s]\n", ev->ts, ev->philo_id, ev_type_string);
 }
 
-static int 	detach_all()
-{
-	int 	i;
-
-	i = 0;
-	while (i < g_context.number_of_philos)
-	{
-		if (pthread_detach(g_context.philos[i]))
-			return (EXIT_FAILURE);
-		i++;
-	}
-	return (EXIT_SUCCESS);
-}
-
 /*
  * Philosofers:
- * ./philo \
+ * 	./philo \
  * 		num_of_philos \
  * 		time_to_die \
  * 		time_to_eat \
@@ -60,11 +46,6 @@ int main(int argc, char **argv)
 	if (initialize_context(&g_context, argc, argv))
 	{
 		printf("Error on init context... :/\n");
-		return (EXIT_FAILURE);
-	}
-	if (detach_all())
-	{
-		printf("Error on detaching threads... :/\n");
 		return (EXIT_FAILURE);
 	}
 	while (ev.ev_type != Died)
