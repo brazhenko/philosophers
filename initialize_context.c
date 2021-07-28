@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void* philo_life(void *a);
+void*		philo_life(void *a);
 
 static int	initialize_philos(t_context *ctx)
 {

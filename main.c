@@ -1,86 +1,32 @@
 #include "helpers.h"
+#include "philo.h"
+#include "event_queue.h"
 #include <stdio.h>
 #include <stdbool.h>
-#include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <sys/param.h>
-#include "philo.h"
-#include "fork.h"
 
 t_context	g_context;
 int	initialize_context(t_context *ctx, int argc, char **argv);
 
-void 	philo_think(t_philo_context *ctx)
+static void 	dump_event(struct s_philo_event* ev)
 {
-	const size_t	left_fork = ctx->id ? ctx->id - 1 : g_context.number_of_philos - 1;
-	const size_t	right_fork = ctx->id;
+	const char *ev_type_string;
 
-	if (!fork_try_take(g_context.forks + MIN(left_fork, right_fork)))
+	if (ev->ev_type == Thinking)
+		ev_type_string = "Thinking";
+	else if (ev->ev_type == Eating)
+		ev_type_string = "Eating";
+	else if (ev->ev_type == Sleeping)
+		ev_type_string = "Sleeping";
+	else if (ev->ev_type == Died)
+		ev_type_string = "Died";
+	else
 		return;
-	if (!fork_try_take(g_context.forks + MAX(left_fork, right_fork)))
-	{
-		fork_put_down(g_context.forks + MIN(left_fork, right_fork));
-		return;
-	}
-	printf("[%7d][%3zu] has taken both forks ─∈ \n", ctx->timestamp, ctx->id);
-	// acquire mutexes successfully
-	ctx->status = Eating;
-	ctx->last_time_ate = ctx->timestamp;
-	ctx->end_of_current_action = ctx->timestamp + g_context.time_to_eat;
-	printf("[%7d][%3zu] is eating        ( ˘▽˘)っ♨ \n", ctx->timestamp, ctx->id);
-}
-
-void	philo_eat(t_philo_context *ctx)
-{
-	const size_t	left_fork = ctx->id ? ctx->id - 1 : g_context.number_of_philos - 1;
-	const size_t	right_fork = ctx->id;
-
-	fork_put_down(g_context.forks + MAX(left_fork, right_fork));
-	fork_put_down(g_context.forks + MIN(left_fork, right_fork));
-	ctx->status = Sleeping;
-	ctx->end_of_current_action = ctx->timestamp + g_context.time_to_sleep;
-	printf("[%7d][%3zu] is sleeping      (ー。ー) ☽ \n", ctx->timestamp, ctx->id);
-}
-
-void	philo_sleep(t_philo_context *ctx)
-{
-	ctx->status = Thinking;
-	printf("[%7d][%3zu] is thinking      ¯\\_(ツ)_/¯ \n", ctx->timestamp, ctx->id);
-}
-
-void 	philo_die(t_philo_context *ctx)
-{
-	printf("[%7d][%2zu] died               (✖╭╮✖) \n", ctx->timestamp, ctx->id);
-}
-
-void*	philo_life(void *a)
-{
-	t_philo_context		ctx;
-
-	memset(&ctx, 0x0, sizeof ctx);
-	ctx.id = (size_t)a;
-
-	while (true)
-	{
-		if (ctx.last_time_ate + g_context.time_to_die <= ctx.timestamp)
-		{
-			philo_die(&ctx);
-			return (NULL);
-		}
-		if (ctx.status == Sleeping && ctx.end_of_current_action <= ctx.timestamp)
-			philo_sleep(&ctx);
-		if (ctx.status == Eating && ctx.end_of_current_action <= ctx.timestamp)
-			philo_eat(&ctx);
-		if (ctx.status == Thinking)
-			philo_think(&ctx);
-		ms_usleep(DEFAULT_SLEEP_TIME_MS);
-		ctx.timestamp += DEFAULT_SLEEP_TIME_MS;
-	}
+	printf("[%7d][%3zu][%15s]\n", ev->ts, ev->philo_id, ev_type_string);
 }
 
 /*
- *
  * Philosofers:
  * ./philo \
  * 		num_of_philos \
@@ -106,6 +52,7 @@ int main(int argc, char **argv)
 //	return 0;
 
 	int 	i;
+	struct s_philo_event	ev;
 
 	printf("Start\n");
 	if (initialize_context(&g_context, argc, argv))
@@ -116,7 +63,14 @@ int main(int argc, char **argv)
 	i = 0;
 	while (i < g_context.number_of_philos)
 	{
-		pthread_join(g_context.philos[i], NULL);
+		pthread_detach(g_context.philos[i]);
 		i++;
 	}
+	while (true)
+	{
+		ev = deque();
+		dump_event(&ev);
+		if (ev.ev_type == Died) break;
+	}
+	return (EXIT_SUCCESS);
 }

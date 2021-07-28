@@ -5,13 +5,14 @@
 # include <sys/time.h>
 # include <stdbool.h>
 # include <pthread.h>
-# define DEFAULT_SLEEP_TIME_MS	100
+# define DEFAULT_SLEEP_TIME_MS	10
 
 enum e_status
 {
 	Thinking = 0,
 	Eating,
-	Sleeping
+	Sleeping,
+	Died
 };
 
 typedef __darwin_suseconds_t t_usec;

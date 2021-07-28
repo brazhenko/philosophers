@@ -34,7 +34,29 @@ int 	fork_try_take(t_fork *fork)
 	return CAS(&fork->locked, 0ULL, 1LL);
 }
 
-void 	fork_put_down(t_fork *fork)
+void 	fork_put_down(t_fork *fork, uint32_t ts)
 {
 	S(&fork->locked, 0);
+}
+
+int 	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts)
+{
+	uint64_t	data;
+	uint64_t	new_data;
+	int 		res;
+
+	data = fork->locked;
+	if (data & FORK_LOCKED)
+		return 0;
+	res = CAS(&fork->locked, data, FORK_LOCKED);
+	if (res)
+		*ts = data & FORK_TS;
+	return res;
+}
+
+void 	fork_put_down_ts_sync(t_fork *fork, uint32_t ts)
+{
+	const uint64_t	new_val = ts;
+
+	S(&fork->locked, new_val);
 }
