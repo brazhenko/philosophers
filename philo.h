@@ -36,6 +36,7 @@ typedef struct
 	size_t	id;
 	t_usec	timestamp;
 	t_usec	last_time_ate;
+	t_usec	last_time_awake;
 	t_usec	end_of_current_action;
 	enum e_status	status;
 }			t_philo_context;

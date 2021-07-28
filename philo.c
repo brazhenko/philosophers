@@ -24,7 +24,7 @@ void 	philo_think(t_philo_context *ctx)
 		return;
 	}
 	// Syncing clocks
-	ctx->timestamp = MAX(ts1, ts2);
+	ctx->timestamp = MAX(MAX(ts1, ts2), ctx->last_time_awake);
 	ctx->status = Eating;
 	ctx->last_time_ate = ctx->timestamp;
 	ctx->end_of_current_action = ctx->timestamp + g_context.time_to_eat;
@@ -46,6 +46,7 @@ void	philo_eat(t_philo_context *ctx)
 void	philo_sleep(t_philo_context *ctx)
 {
 	ctx->status = Thinking;
+	ctx->last_time_awake = ctx->timestamp;
 	enqueue(ctx->timestamp, Thinking, ctx->id);
 }
 
@@ -68,12 +69,13 @@ void*	philo_life(void *a)
 			philo_die(&ctx);
 			return (NULL);
 		}
+//		printf("end: %u\n", ctx.end_of_current_action);
 		if (ctx.status == Sleeping && ctx.end_of_current_action <= ctx.timestamp)
 			philo_sleep(&ctx);
-		if (ctx.status == Eating && ctx.end_of_current_action <= ctx.timestamp)
-			philo_eat(&ctx);
 		if (ctx.status == Thinking)
 			philo_think(&ctx);
+		if (ctx.status == Eating && ctx.end_of_current_action <= ctx.timestamp)
+			philo_eat(&ctx);
 		ms_usleep(DEFAULT_SLEEP_TIME_MS);
 		ctx.timestamp += DEFAULT_SLEEP_TIME_MS;
 	}
