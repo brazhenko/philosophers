@@ -58,6 +58,7 @@ void	philo_sleep(t_philo_context *ctx)
 {
 	ctx->status = Thinking;
 	ctx->last_time_awake = ctx->timestamp;
+	ctx->end_of_current_action = INT_MAX;
 	enqueue(ctx->timestamp, Thinking, ctx->id);
 }
 
@@ -71,13 +72,15 @@ void 	philo_sync(t_philo_context *ctx)
 	const uint64_t	ts1 = g_context.forks[ctx->first_fork].locked & FORK_TS;
 	const uint64_t	ts2 = g_context.forks[ctx->second_fork].locked & FORK_TS;
 
+//	printf("id: %zu, myts: %d | ts1, %llu | ts2: %llu | lasttimeate: %d, end: %d\n", ctx->id, ctx->timestamp, ts1, ts2, ctx->last_time_ate, ctx->end_of_current_action);
+
 	if (ctx->last_time_ate + g_context.time_to_die <= ctx->timestamp
 		&&
 		(
 		(
 			ctx->last_time_ate + g_context.time_to_die < ts1
 			|| ctx->last_time_ate + g_context.time_to_die < ts2
-		) || (ctx->end_of_current_action <= ctx->timestamp)))
+		) || (ctx->end_of_current_action < ctx->timestamp)))
 	{
 		ctx->timestamp = MIN(ctx->timestamp, MAX(ts1, ts2));
 		philo_die(ctx);
@@ -94,6 +97,7 @@ _Noreturn void*	philo_life(void *a)
 			+ ((ctx.id + 1 == g_context.number_of_philos && (g_context.number_of_philos & 1)) << 1);
 	ctx.first_fork = MIN(ctx.id,  (ctx.id + 1) % g_context.number_of_philos);
 	ctx.second_fork = MAX(ctx.id,  (ctx.id + 1) % g_context.number_of_philos);
+	ctx.end_of_current_action = INT_MAX;
 
 	enqueue(ctx.timestamp, Thinking, ctx.id);
 	while (true)
