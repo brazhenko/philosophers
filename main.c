@@ -7,38 +7,36 @@
 
 t_context	g_context;
 
+struct event_mapper {
+	enum e_status ev_type;
+	const char *ev_type_string;
+	const char *ev_type_color_string;
+};
+
+static const struct event_mapper evm[] = {
+		{   Thinking, 		"Thinking", 	ANSI_COLOR_BLUE }
+		, { Eating, 		"Eating", 		ANSI_COLOR_CYAN }
+		, { Sleeping, 		"Sleeping", 	ANSI_COLOR_MAGENTA }
+		, { Died, 			"Died", 		ANSI_COLOR_RED }
+		, { AllAteNTimes, 	"All done", 	ANSI_COLOR_RED }
+};
+
 static void 	dump_event(struct s_philo_event* ev)
 {
 	const char *ev_type_string;
 	const char *event_color = ANSI_COLOR_RESET;
 
-	if (ev->ev_type == Thinking)
+	int i = 0;
+	while (i < sizeof evm / sizeof evm[0])
 	{
-		ev_type_string = "Thinking";
-		event_color = ANSI_COLOR_BLUE;
+		if (ev->ev_type == evm[i].ev_type)
+		{
+			ev_type_string = evm[i].ev_type_string;
+			event_color = evm[i].ev_type_color_string;
+			break ;
+		}
+		i++;
 	}
-	else if (ev->ev_type == Eating)
-	{
-		ev_type_string = "Eating";
-		event_color = ANSI_COLOR_CYAN;
-	}
-	else if (ev->ev_type == Sleeping)
-	{
-		ev_type_string = "Sleeping";
-		event_color = ANSI_COLOR_MAGENTA;
-	}
-	else if (ev->ev_type == Died)
-	{
-		event_color = ANSI_COLOR_RED;
-		ev_type_string = "Died";
-	}
-	else if (ev->ev_type == AllAteNTimes)
-	{
-		event_color = ANSI_COLOR_RED;
-		ev_type_string = "All done";
-	}
-	else
-		return;
 	printf("%4$s[%1$7d]%5$s[%2$3zu]%7$s[%3$10s]%6$s\n",
 		ev->ts, ev->philo_id, ev_type_string,
 		ANSI_COLOR_GREEN, ANSI_COLOR_YELLOW, ANSI_COLOR_RESET,
@@ -46,7 +44,7 @@ static void 	dump_event(struct s_philo_event* ev)
 }
 
 /*
- * Philosofers:
+ * Philosophers:
  * 	./philo \
  * 		num_of_philos \
  * 		time_to_die \
