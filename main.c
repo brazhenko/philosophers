@@ -58,13 +58,6 @@ int	initialize_context(t_context *ctx, int argc, char **argv);
 
 int main(int argc, char **argv)
 {
-//	uint64_t data = 53;
-//
-//	while (1) {
-//
-//		S(&data, 64);
-//		printf("res: %d, %llu\n", 1, data);
-//	}
 	struct s_philo_event	ev;
 
 	memset(&ev, 0x0, sizeof ev);

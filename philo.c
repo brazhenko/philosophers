@@ -77,7 +77,6 @@ void 	philo_sync(t_philo_context *ctx)
 			|| ctx->last_time_ate + g_context.time_to_die < ts2
 		))
 	{
-//		printf("ts1: %llu, ts2: %llu, myts: %u\n", ts1, ts2, ctx->timestamp);
 		ctx->timestamp = MIN(ctx->timestamp, MAX(ts1, ts2));
 		philo_die(ctx);
 	}
