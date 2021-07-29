@@ -31,9 +31,9 @@ void	philo_think(t_philo_context *ctx)
 	ctx->end_of_current_action = ctx->timestamp + g_context.time_to_eat;
 	// This thread owns both forks, so we can write there (set end time)
 	g_context.forks[ctx->first_fork].locked
-			= g_context.forks[ctx->first_fork].locked & ~FORK_TS | ctx->end_of_current_action;
+			= (g_context.forks[ctx->first_fork].locked & ~FORK_TS) | ctx->end_of_current_action;
 	g_context.forks[ctx->second_fork].locked
-			= g_context.forks[ctx->second_fork].locked & ~FORK_TS | ctx->end_of_current_action;
+			= (g_context.forks[ctx->second_fork].locked & ~FORK_TS) | ctx->end_of_current_action;
 	enqueue(ctx->timestamp, Eating, ctx->id);
 	ctx->times_ate++;
 	if (ctx->times_ate == g_context.number_of_times_each_philo_must_eat && g_context.yes)
@@ -41,6 +41,7 @@ void	philo_think(t_philo_context *ctx)
 	if (g_context.number_of_philos_completed_eat_task == g_context.number_of_philos)
 		enqueue(ctx->timestamp, AllAteNTimes, ctx->id);
 }
+
 
 void	philo_eat(t_philo_context *ctx)
 {
@@ -73,9 +74,10 @@ void 	philo_sync(t_philo_context *ctx)
 	if (ctx->last_time_ate + g_context.time_to_die <= ctx->timestamp
 		&&
 		(
+		(
 			ctx->last_time_ate + g_context.time_to_die < ts1
 			|| ctx->last_time_ate + g_context.time_to_die < ts2
-		))
+		) || (ctx->end_of_current_action <= ctx->timestamp)))
 	{
 		ctx->timestamp = MIN(ctx->timestamp, MAX(ts1, ts2));
 		philo_die(ctx);

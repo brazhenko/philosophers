@@ -29,7 +29,10 @@
  *
  */
 
-uint64_t	next_turn(uint64_t current_state, uint64_t fork_id, size_t num_of_forks)
+uint64_t	next_turn(
+		uint64_t current_state,
+		uint64_t fork_id,
+		size_t num_of_forks)
 {
 	if ((num_of_forks & 1) == 0)
 		return (current_state ^ 0x1);
@@ -40,19 +43,18 @@ uint64_t	next_turn(uint64_t current_state, uint64_t fork_id, size_t num_of_forks
 	return (current_state ^ 0x1);
 }
 
-
 int 	fork_try_take(t_fork *fork)
 {
 	const uint64_t data = fork->locked;
 
 	if (data & FORK_LOCKED)
 		return (0);
-	return CAS(&fork->locked, data, data | FORK_LOCKED);
+	return compare_and_swap(&fork->locked, data, data | FORK_LOCKED);
 }
 
 void 	fork_put_down(t_fork *fork)
 {
-	S(&fork->locked, fork->locked & ~FORK_LOCKED);
+	swap(&fork->locked, fork->locked & ~FORK_LOCKED);
 }
 
 int 	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts, uint64_t label)
@@ -65,7 +67,7 @@ int 	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts, uint64_t label)
 		return (0);
 	if ((data >> FORK_TURN_SHIFT) != label)
 		return (0);
-	res = CAS(&fork->locked, data, data | FORK_LOCKED);
+	res = compare_and_swap(&fork->locked, data, data | FORK_LOCKED);
 	if (res)
 		*ts = data & FORK_TS;
 	return res;
@@ -75,7 +77,9 @@ void 	fork_put_down_ts_sync(t_fork *fork, uint32_t ts, uint64_t fork_id, size_t 
 {
 	const uint64_t	new_val = ts;
 
-	S(&fork->locked,
-		new_val |
-		(next_turn(fork->locked >> FORK_TURN_SHIFT, fork_id, num_of_philos) << FORK_TURN_SHIFT));
+	swap(&fork->locked,
+		new_val
+		| (next_turn(fork->locked >> FORK_TURN_SHIFT,
+			fork_id, num_of_philos)
+			<< FORK_TURN_SHIFT));
 }

@@ -1,7 +1,12 @@
 #ifndef ATOMIC_PRIMITIVES_H
 # define ATOMIC_PRIMITIVES_H
 
+#ifndef __x86_64__
+# error "This implemetation is for x86_64 arch only"
+#endif
+
 # include <stdint.h>
+# define DEFAULT_CACHE_LINE_SIZE 64
 
 /*
  * Proceeds compare-and-swap as follows:
@@ -16,7 +21,7 @@
  * return: 1 success, 0 - failure
  *
  */
-int 	CAS(uint64_t *ptr, uint64_t old_val, uint64_t new_val);
+int			compare_and_swap(uint64_t *ptr, uint64_t old_val, uint64_t new_val);
 
 /*
  * Proceeds swap as follows:
@@ -25,7 +30,7 @@ int 	CAS(uint64_t *ptr, uint64_t old_val, uint64_t new_val);
  * }
  *
  */
-void 	S(uint64_t *ptr, uint64_t new_val);
+void		swap(uint64_t *ptr, uint64_t new_val);
 
 /*
  * Proceeds the following operation:
