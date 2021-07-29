@@ -32,6 +32,11 @@ static void 	dump_event(struct s_philo_event* ev)
 		event_color = ANSI_COLOR_RED;
 		ev_type_string = "Died";
 	}
+	else if (ev->ev_type == AllAteNTimes)
+	{
+		event_color = ANSI_COLOR_RED;
+		ev_type_string = "All done";
+	}
 	else
 		return;
 	printf("%4$s[%1$7d]%5$s[%2$3zu]%7$s[%3$10s]%6$s\n",
@@ -70,7 +75,7 @@ int main(int argc, char **argv)
 		printf("Error on init context... :/\n");
 		return (EXIT_FAILURE);
 	}
-	while (ev.ev_type != Died)
+	while (ev.ev_type != Died && ev.ev_type != AllAteNTimes)
 	{
 		ev = deque();
 		dump_event(&ev);

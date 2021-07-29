@@ -7,6 +7,7 @@
 #include "philo.h"
 #include "fork.h"
 #include "event_queue.h"
+#include "atomic_primitives.h"
 
 extern t_context	g_context;
 
@@ -35,19 +36,18 @@ void	philo_think(t_philo_context *ctx)
 			= g_context.forks[ctx->second_fork].locked & ~FORK_TS | ctx->end_of_current_action;
 	enqueue(ctx->timestamp, Eating, ctx->id);
 	ctx->times_ate++;
-	if (ctx->times_ate == g_context.time_to_eat && g_context.yes)
-		;
+	if (ctx->times_ate == g_context.number_of_times_each_philo_must_eat && g_context.yes)
+		fetch_add_mod(&g_context.number_of_philos_completed_eat_task, 1, ULONG_MAX);
+	if (g_context.number_of_philos_completed_eat_task == g_context.number_of_philos)
+		enqueue(ctx->timestamp, AllAteNTimes, ctx->id);
 }
 
 void	philo_eat(t_philo_context *ctx)
 {
-	const size_t	left_fork = ctx->id;
-	const size_t	right_fork = (ctx->id + 1) % g_context.number_of_philos;
-
-	fork_put_down_ts_sync(g_context.forks + MAX(left_fork, right_fork),
-			ctx->timestamp, MAX(left_fork, right_fork), g_context.number_of_philos);
-	fork_put_down_ts_sync(g_context.forks + MIN(left_fork, right_fork),
-			ctx->timestamp, MIN(left_fork, right_fork), g_context.number_of_philos);
+	fork_put_down_ts_sync(g_context.forks + ctx->second_fork,
+			ctx->timestamp, ctx->second_fork, g_context.number_of_philos);
+	fork_put_down_ts_sync(g_context.forks + ctx->first_fork,
+			ctx->timestamp, ctx->first_fork, g_context.number_of_philos);
 	ctx->status = Sleeping;
 	ctx->end_of_current_action = ctx->timestamp + g_context.time_to_sleep;
 	enqueue(ctx->timestamp, Sleeping, ctx->id);

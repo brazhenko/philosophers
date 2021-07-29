@@ -26,6 +26,7 @@ typedef struct
 	t_usec	time_to_sleep;
 	bool	yes;
 	size_t	number_of_times_each_philo_must_eat;
+	uint64_t	number_of_philos_completed_eat_task;
 
 	pthread_t	*philos;
 	t_fork 		*forks_real_ptr;
