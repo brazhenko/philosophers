@@ -5,7 +5,7 @@
 # include <sys/time.h>
 # include <stdbool.h>
 # include <pthread.h>
-# define DEFAULT_SLEEP_TIME_MS	200
+# define DEFAULT_SLEEP_TIME_MS	1
 
 enum e_status
 {
@@ -33,8 +33,10 @@ typedef struct
 
 typedef struct
 {
-	size_t	id;
+	size_t		id;
 	uint64_t	label;
+	size_t	 	first_fork;
+	size_t		second_fork;
 	t_usec	timestamp;
 	t_usec	last_time_ate;
 	t_usec	last_time_awake;

@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void*		philo_life(void *a);
+_Noreturn void*		philo_life(void *a);
 
 static int	initialize_philos(t_context *ctx)
 {
@@ -58,7 +58,9 @@ static int	initialize_forks(t_context *ctx)
 	ctx->forks_real_ptr = mem;
 	ctx->forks = (t_fork *)
 			(((uintptr_t)mem + (DEFAULT_CACHELINE_SIZE - 1)) & ~0x3f);
-	memset(ctx->forks, 0x0, fork_real_alloc_size);
+	memset(ctx->forks_real_ptr, 0x0, fork_real_alloc_size);
+	if (ctx->number_of_philos & 1)
+		ctx->forks[ctx->number_of_philos - 1].locked = FORK_TURN_01;
 	return (EXIT_SUCCESS);
 }
 
@@ -84,9 +86,9 @@ int initialize_context(t_context *ctx, int argc, char **argv)
 	}
 	if (initialize_forks(ctx))
 		return (EXIT_FAILURE);
-	printf("%s[%7s]%s[%3s]%s[%10s]\n",
+	printf("%s[%7s]%s[%3s]%s[%10s]%s\n",
 		ANSI_COLOR_GREEN, "time",
-		ANSI_COLOR_YELLOW, "id", ANSI_COLOR_RESET, "event");
+		ANSI_COLOR_YELLOW, "id", ANSI_COLOR_RED, "event", ANSI_COLOR_RESET);
 	if (initialize_philos(ctx))
 		return (EXIT_FAILURE);
 	if (detach_philos(ctx))
