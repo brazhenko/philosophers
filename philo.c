@@ -34,6 +34,9 @@ void	philo_think(t_philo_context *ctx)
 	g_context.forks[ctx->second_fork].locked
 			= g_context.forks[ctx->second_fork].locked & ~FORK_TS | ctx->end_of_current_action;
 	enqueue(ctx->timestamp, Eating, ctx->id);
+	ctx->times_ate++;
+	if (ctx->times_ate == g_context.time_to_eat && g_context.yes)
+		;
 }
 
 void	philo_eat(t_philo_context *ctx)

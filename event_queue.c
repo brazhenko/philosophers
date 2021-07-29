@@ -1,5 +1,6 @@
 #include "philo.h"
 #include "event_queue.h"
+#include "atomic_primitives.h"
 #include <stdio.h>
 #include <unistd.h>
 
@@ -14,16 +15,6 @@ struct s_philo_event_internal
 __attribute__ ((aligned(64))) static struct s_philo_event_internal	g_queue[QUEUE_SIZE];
 __attribute__ ((aligned(64))) uint64_t						g_head = 0; // to pop
 uint64_t 													g_tail = 0; // to push
-
-uint64_t	fetch_add_mod(uint64_t *num, uint64_t to_add, uint64_t mod)
-{
-	uint64_t	old_val;
-
-	old_val = *num;
-	while (!CAS(num, old_val, (old_val + to_add) % mod))
-		old_val = *num;
-	return old_val;
-}
 
 void	enqueue(t_usec ts, enum e_status ev_type, size_t philo_id)
 {

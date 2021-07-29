@@ -12,7 +12,8 @@ enum e_status
 	Thinking = 0,
 	Eating,
 	Sleeping,
-	Died
+	Died,
+	AllAteNTimes
 };
 
 typedef __darwin_suseconds_t t_usec;
@@ -37,6 +38,7 @@ typedef struct
 	uint64_t	label;
 	size_t	 	first_fork;
 	size_t		second_fork;
+	size_t		times_ate;
 	t_usec	timestamp;
 	t_usec	last_time_ate;
 	t_usec	last_time_awake;

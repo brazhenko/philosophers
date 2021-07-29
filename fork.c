@@ -1,4 +1,5 @@
 #include "fork.h"
+#include "atomic_primitives.h"
 #include <stdint.h>
 #include <printf.h>
 
@@ -39,33 +40,6 @@ uint64_t	next_turn(uint64_t current_state, uint64_t fork_id, size_t num_of_forks
 	return (current_state ^ 0x1);
 }
 
-int 	CAS(uint64_t *ptr, uint64_t old_val, uint64_t new_val)
-{
-	int	ret;
-	asm	volatile (
-		"mov %1, %%rax\n\t"
-		"lock\n\t"
-		"cmpxchg %2, (%3)\n\t"
-		"mov $0, %0\n\t"
-		"jnz 1f\n\t"
-		"mov $1, %0\n\t"
-		"1:\n\t"
-		: "+r" (ret)
-		: "r" (old_val), "r" (new_val), "r" (ptr)
-		: "memory", "%rax"
-	);
-	return ret;
-}
-
-void 	S(uint64_t *ptr, uint64_t new_val)
-{
-	asm	volatile  (
-		"lock\n\t"
-		"xchg %0, (%1)\n\t"
-		:: "r" (new_val), "r" (ptr)
-		: "memory"
-	);
-}
 
 int 	fork_try_take(t_fork *fork)
 {
