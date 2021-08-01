@@ -61,8 +61,9 @@ I had to use some tricks
 
 ### Solution
 
+
 #### General overview
-One fork -- one mutex, one thread. 
+One fork -- one mutex, one philo -- one thread. 
 
 
 #### Deadlock safety
@@ -72,9 +73,15 @@ philosopher should respect the rules:
 * put down forks in a **reverse** order (i.e. **bigger** fork first)
 
 #### Eating order
+Split philosophers in two equal groups `EVEN` and `ODD` (and one `EXTRA` if the
+number of philosophers is odd). `EVEN` eat first, then `ODD` and then `EXTRA`
+(if exist). The mechanism is encapsulated in `fork`s -- mutex-like types.
 
 #### Time sync
-It 
+It is obvious that having a particular order in which philosophers should eat
+we set a [linear order](https://en.wikipedia.org/wiki/Total_order) on a set
+of events (every start/end of eating, sleeping, thinking form a set of _events_).
+Our job is to keep it coherent.
 
 
 #### Stopping the simulation
