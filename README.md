@@ -69,11 +69,19 @@ One fork -- one mutex, one thread.
 Let the forks be numbered in circle `1, 2, ..., n`. To avoid deadlock each 
 philosopher should respect the rules:
 * the first fork to take is a fork with a **smaller number**
-* put down a fork in a **reverse** order (i.e. **bigger** fork first)
+* put down forks in a **reverse** order (i.e. **bigger** fork first)
+
+#### Eating order
 
 #### Time sync
+It 
+
 
 #### Stopping the simulation
+Nothing can be printed after the philosopher dies or every philosopher ate
+defined amount of times. After that we need some queue-like thread-safe data 
+structure to `enqueue()` events from threads; `dequeue()` and handle them in
+the main thread. Lock-free circular queue was selected.
 
 ### Proof of correctness
 
