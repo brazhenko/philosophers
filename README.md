@@ -45,8 +45,46 @@ The general rules are the same as above except these:
  `time_to_sleep = 100`)
 * the programme should work as a simulation
 * philosopher dies ⇒ simulation stops
+* some limitations on using libc function
 
 Check the original task [here](https://projects.intra.42.fr/projects/42cursus-philosophers).
 
 ### Purposes 
+There are two main points of complexity in comparison with original problem:
+1. the philosopher can eat and sleep not as long as they wants and must do everything in time
+2. the philosopher can die due to inappropriate input (not because of deadlock)
 
+
+According to the facts above and unwillingness to rely on inaccurate 
+`usleep` to sync philosophers' actions (it was supposed by the task, btw)
+I had to use some tricks
+
+### Solution
+
+#### General overview
+One fork -- one mutex, one thread. 
+
+
+#### Deadlock safety
+Let the forks be numbered in circle `1, 2, ..., n`. To avoid deadlock each 
+philosopher should respect the rules:
+* the first fork to take is a fork with a **smaller number**
+* put down a fork in a **reverse** order (i.e. **bigger** fork first)
+
+#### Time sync
+
+#### Stopping the simulation
+
+### Proof of correctness
+
+### Implemetation
+
+### Usage
+```zsh 
+make
+# ./philo num_of_ph time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]
+# Last parameter is optional, can be used to limit the simulation time
+./philo 5 400 200 200
+```
+
+### Further exploration
