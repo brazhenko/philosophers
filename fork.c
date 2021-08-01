@@ -28,19 +28,18 @@
  * the t_fork mutex.
  *
  */
-
 uint64_t	next_turn(
-		uint64_t current_state,
+		uint64_t current_turn,
 		uint64_t fork_id,
 		size_t num_of_forks)
 {
 	if ((num_of_forks & 1) == 0)
-		return (current_state ^ 0x1);
+		return (current_turn ^ 0x1);
 	if (fork_id == 0)
-		return (current_state ^ 0x2);
+		return (current_turn ^ 0x2);
 	if (fork_id + 1 == num_of_forks)
-		return (current_state ^ 0x3);
-	return (current_state ^ 0x1);
+		return (current_turn ^ 0x3);
+	return (current_turn ^ 0x1);
 }
 
 int 	fork_try_take(t_fork *fork)

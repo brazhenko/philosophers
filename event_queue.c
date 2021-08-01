@@ -22,7 +22,8 @@ void	enqueue(t_usec ts, enum e_status ev_type, size_t philo_id)
 	size_t		my_tail;
 
 	my_tail = fetch_add_mod(&g_tail, 1, EVENT_QUEUE_SIZE);
-	while (g_queue[my_tail].ready);
+	while (g_queue[my_tail].ready)
+		usleep(10);
 	g_queue[my_tail].ts = ts;
 	g_queue[my_tail].ev_type = ev_type;
 	g_queue[my_tail].philo_id = philo_id;
