@@ -13,9 +13,9 @@
  *                                               philo
  *  Turn: 00                   Turn: 01          count     Turn: 10
  *  (only even philos  anyway  (only odd philos  is odd    (the one 'extra' philo
- *  are permitted to  ───────> are permitted    ────────>  which is counted neither
- *  take this fork,            to take fork)               nor even and has own
- *  default )                         |                    permission for lock)
+ *  are permitted to  ───────> are permitted    ────────>  which is counted
+ *  take this fork,            to take fork)               neither odd nor even
+ *  default )                         |                    and has own permission for lock)
  *      ▲         philo_count is even │              anyway   │
  *      └─────────────────────────────┘───────────────────────┘
  *
@@ -42,18 +42,9 @@ uint64_t	next_turn(
 	return (current_turn ^ 0x1);
 }
 
-int 	fork_try_take(t_fork *fork)
-{
-	const uint64_t data = fork->locked;
-
-	if (data & FORK_LOCKED)
-		return (0);
-	return compare_and_swap(&fork->locked, data, data | FORK_LOCKED);
-}
-
 void 	fork_put_down(t_fork *fork)
 {
-	swap(&fork->locked, fork->locked & ~FORK_LOCKED);
+	swap(&fork->data, fork->data & ~FORK_LOCKED);
 }
 
 int 	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts, uint64_t label)
@@ -61,24 +52,25 @@ int 	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts, uint64_t label)
 	uint64_t	data;
 	int 		res;
 
-	data = fork->locked;
+	data = fork->data;
 	if (data & FORK_LOCKED)
 		return (0);
 	if ((data >> FORK_TURN_SHIFT) != label)
 		return (0);
-	res = compare_and_swap(&fork->locked, data, data | FORK_LOCKED);
+	res = compare_and_swap(&fork->data, data, data | FORK_LOCKED);
 	if (res)
 		*ts = data & FORK_TS;
 	return res;
 }
 
-void 	fork_put_down_ts_sync(t_fork *fork, uint32_t ts, uint64_t fork_id, size_t num_of_philos)
+void 	fork_put_down_ts_sync(t_fork *fork, uint32_t ts,
+		uint64_t fork_id, size_t num_of_philos)
 {
 	const uint64_t	new_val = ts;
 
-	swap(&fork->locked,
+	swap(&fork->data,
 		new_val
-		| (next_turn(fork->locked >> FORK_TURN_SHIFT,
-			fork_id, num_of_philos)
-			<< FORK_TURN_SHIFT));
+		| (next_turn(fork->data >> FORK_TURN_SHIFT,
+		fork_id, num_of_philos)
+		<< FORK_TURN_SHIFT));
 }

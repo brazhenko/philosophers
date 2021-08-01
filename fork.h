@@ -19,13 +19,13 @@
 
 
 struct s_fork {
-	uint64_t	locked;
+	uint64_t	data;
 } __attribute__ ((aligned (DEFAULT_CACHE_LINE_SIZE)));
 
 
 typedef struct s_fork	t_fork;
 
-int 	fork_try_take(t_fork *fork);
+int 	fork_try_take(t_fork *fork, uint32_t *ts_out, uint32_t ts_in, uint64_t label);
 void 	fork_put_down(t_fork *fork);
 
 int 	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts, uint64_t label);

@@ -55,8 +55,8 @@ static int		initialize_forks(t_context *ctx)
 	ctx->forks = (t_fork *)
 			(((uintptr_t)mem + (DEFAULT_CACHE_LINE_SIZE - 1)) & ~0x3f);
 	memset(ctx->forks_real_ptr, 0x0, fork_real_alloc_size);
-	if (ctx->number_of_philos & 1)
-		ctx->forks[ctx->number_of_philos - 1].locked = FORK_TURN_01;
+	if (ctx->number_of_philos & 1 && ctx->number_of_philos != 1)
+		ctx->forks[ctx->number_of_philos - 1].data = FORK_TURN_01;
 	return (EXIT_SUCCESS);
 }
 

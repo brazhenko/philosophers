@@ -16,11 +16,10 @@ void	philo_think(t_philo_context *ctx)
 	uint32_t		ts1;
 	uint32_t		ts2;
 
-	if (!fork_try_take_ts_sync
-			(g_context.forks + ctx->first_fork, &ts1, ctx->label))
+	if (!fork_try_take_ts_sync(g_context.forks + ctx->first_fork, &ts1, ctx->label))
 		return ;
-	if (!fork_try_take_ts_sync
-			(g_context.forks + ctx->second_fork, &ts2, ctx->label))
+	g_context.forks[ctx->first_fork].data = (g_context.forks[ctx->first_fork].data & ~FORK_TS) | (MAX(ts1, ctx->last_time_awake) + g_context.time_to_eat);
+	if (!fork_try_take_ts_sync(g_context.forks + ctx->second_fork, &ts2, ctx->label))
 	{
 		fork_put_down(g_context.forks + ctx->first_fork);
 		return ;
@@ -29,11 +28,11 @@ void	philo_think(t_philo_context *ctx)
 	ctx->status = Eating;
 	ctx->last_time_ate = ctx->timestamp;
 	ctx->end_of_current_action = ctx->timestamp + g_context.time_to_eat;
+
 	// This thread owns both forks, so we can write there (set end time)
-	g_context.forks[ctx->first_fork].locked
-			= (g_context.forks[ctx->first_fork].locked & ~FORK_TS) | ctx->end_of_current_action;
-	g_context.forks[ctx->second_fork].locked
-			= (g_context.forks[ctx->second_fork].locked & ~FORK_TS) | ctx->end_of_current_action;
+	g_context.forks[ctx->first_fork].data = (g_context.forks[ctx->first_fork].data & ~FORK_TS) | ctx->end_of_current_action;
+	g_context.forks[ctx->second_fork].data = (g_context.forks[ctx->second_fork].data & ~FORK_TS) | ctx->end_of_current_action;
+
 	enqueue(ctx->timestamp, Eating, ctx->id);
 	ctx->times_ate++;
 	if (ctx->times_ate == g_context.number_of_times_each_philo_must_eat && g_context.yes)
@@ -69,15 +68,14 @@ void 	philo_die(t_philo_context *ctx)
 
 void 	philo_sync(t_philo_context *ctx)
 {
-	const uint64_t	ts1 = g_context.forks[ctx->first_fork].locked & FORK_TS;
-	const uint64_t	ts2 = g_context.forks[ctx->second_fork].locked & FORK_TS;
+	const uint64_t	ts1 = g_context.forks[ctx->first_fork].data & FORK_TS;
+	const uint64_t	ts2 = g_context.forks[ctx->second_fork].data & FORK_TS;
 
 //	printf("id: %zu, myts: %d | ts1, %llu | ts2: %llu | lasttimeate: %d, end: %d\n", ctx->id, ctx->timestamp, ts1, ts2, ctx->last_time_ate, ctx->end_of_current_action);
 
 	if (ctx->last_time_ate + g_context.time_to_die <= ctx->timestamp
 		&&
-		(
-		(
+		((
 			ctx->last_time_ate + g_context.time_to_die < ts1
 			|| ctx->last_time_ate + g_context.time_to_die < ts2
 		) || (ctx->end_of_current_action < ctx->timestamp)))
@@ -95,6 +93,9 @@ _Noreturn void*	philo_life(void *a)
 	ctx.id = (size_t)a;
 	ctx.label = (ctx.id & 0x1)
 			+ ((ctx.id + 1 == g_context.number_of_philos && (g_context.number_of_philos & 1)) << 1);
+	if (g_context.number_of_philos == 1)
+		ctx.label = 0;
+
 	ctx.first_fork = MIN(ctx.id,  (ctx.id + 1) % g_context.number_of_philos);
 	ctx.second_fork = MAX(ctx.id,  (ctx.id + 1) % g_context.number_of_philos);
 	ctx.end_of_current_action = INT_MAX;
