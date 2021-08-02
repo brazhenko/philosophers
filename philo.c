@@ -18,7 +18,7 @@ void	philo_think(t_philo_context *ctx)
 
 	if (!fork_try_take_ts_sync(g_context.forks + ctx->first_fork, &ts1, ctx->label))
 		return ;
-	g_context.forks[ctx->first_fork].data = (g_context.forks[ctx->first_fork].data & ~FORK_TS) | (MAX(ts1, ctx->last_time_awake) + g_context.time_to_eat);
+//	g_context.forks[ctx->first_fork].data = (g_context.forks[ctx->first_fork].data & ~FORK_TS) | (MAX(ts1, ctx->last_time_awake) + g_context.time_to_eat);
 	if (!fork_try_take_ts_sync(g_context.forks + ctx->second_fork, &ts2, ctx->label))
 	{
 		fork_put_down(g_context.forks + ctx->first_fork);

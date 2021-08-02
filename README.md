@@ -73,8 +73,9 @@ philosopher should respect the rules:
 * put down forks in a **reverse** order (i.e. **bigger** fork first)
 
 #### Eating order
-Split philosophers in two equal groups `EVEN` and `ODD` (and one `EXTRA` if the
-number of philosophers is odd). `EVEN` eat first, then `ODD` and then `EXTRA`
+Split philosophers in two equal groups `EVEN` and `ODD` (and group `EXTRA`
+with 1 philosopher if the number of philosophers is odd).
+`EVEN` eat first, then `ODD` and then `EXTRA`
 (if exist). The mechanism is encapsulated in `fork`s -- mutex-like types.
 
 #### Time sync
@@ -91,13 +92,23 @@ structure to `enqueue()` events from threads; `dequeue()` and handle them in
 the main thread. Lock-free circular queue was selected.
 
 ### Proof of correctness
+#### Deadlock safety
+Let red arrow means "philosopher holds a fork" and blue one means
+"philosopher is stuck on trying to pick up a fork". _Deadlock_ happens
+if and only if cycle in a graph happens.
+
+<p align="center">
+  <img src="resources/philos_color.png" />
+</p>
+
+
 
 ### Implemetation
 
 ### Usage
 ```zsh 
 make
-# ./philo num_of_ph time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]
+# ./philo num_of_ph time_to_die time_to_eat time_to_sleep [number_of_eat]
 # Last parameter is optional, can be used to limit the simulation time
 ./philo 5 400 200 200
 ```
