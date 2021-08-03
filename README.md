@@ -63,7 +63,7 @@ I had to use some tricks
 
 
 #### General overview
-One fork -- one mutex, one philo -- one thread. 
+One fork — one mutex, one philo — one thread. 
 
 
 #### Deadlock safety
@@ -76,7 +76,7 @@ philosopher should respect the rules:
 Split philosophers in two equal groups `EVEN` and `ODD` (and group `EXTRA`
 with 1 philosopher if the number of philosophers is odd).
 `EVEN` eat first, then `ODD` and then `EXTRA`
-(if exist). The mechanism is encapsulated in `fork`s -- mutex-like types.
+(if exist). The mechanism is encapsulated in `fork`s — mutex-like types.
 
 #### Time sync
 It is obvious that having a particular order in which philosophers should eat
@@ -91,19 +91,10 @@ defined amount of times. After that we need some queue-like thread-safe data
 structure to `enqueue()` events from threads; `dequeue()` and handle them in
 the main thread. Lock-free circular queue was selected.
 
-### Proof of correctness
-#### Deadlock safety
-Let red arrow means "philosopher holds a fork" and blue one means
-"philosopher is stuck on trying to pick up a fork". _Deadlock_ happens
-if and only if cycle in a graph happens.
-
-<p align="center">
-  <img src="resources/philos_color.png" />
-</p>
-
-
 
 ### Implemetation
+
+
 
 ### Usage
 ```zsh 
@@ -114,4 +105,4 @@ make
 ```
 
 ### Further exploration
-How to implement lock-free non-circular queue -- [link](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.53.8674&rep=rep1&type=pdf).
+How to implement lock-free non-circular queue — [link](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.53.8674&rep=rep1&type=pdf).
