@@ -5,6 +5,8 @@
 #include "linked_queue/linked_queue.h"
 #include "external/event_queue.h"
 
+
+
 static void BM_my_mutex(benchmark::State& state) {
 	// Perform setup here
 	t_fork mtx;
@@ -15,10 +17,6 @@ static void BM_my_mutex(benchmark::State& state) {
 		fork_put_down(&mtx);
 	}
 }
-
-# define  TCOUNT 10
-# define CCC	1000
-
 
 static void BM_pthread_mutex(benchmark::State& state) {
 	// Perform setup here
@@ -33,6 +31,9 @@ static void BM_pthread_mutex(benchmark::State& state) {
 		pthread_mutex_unlock(&lock);
 	}
 }
+
+# define	TCOUNT	10
+# define	CCC		1000
 
 int writer(size_t count) {
 	for (size_t i = 0; i < count; i++) {
@@ -64,8 +65,6 @@ static void test_queue_mutex(int thread_count) {
 		fprintf(stderr, "Error on creating thread :/\n");
 		exit (-1);
 	}
-
-
 	for (int i = 0; i < thread_count + 1; i++) {
 		if (pthread_join(arr[i], NULL))
 			exit(-1);
