@@ -36,7 +36,7 @@ void	philo_think(t_philo_context *ctx)
 	enqueue(ctx->timestamp, Eating, ctx->id);
 	ctx->times_ate++;
 	if (ctx->times_ate == g_context.number_of_times_each_philo_must_eat && g_context.yes)
-		fetch_add_mod(&g_context.number_of_philos_completed_eat_task, 1, ULONG_MAX);
+		fetch_add(&g_context.number_of_philos_completed_eat_task, 1);
 	if (g_context.number_of_philos_completed_eat_task == g_context.number_of_philos)
 		enqueue(ctx->timestamp, AllAteNTimes, ctx->id);
 }
