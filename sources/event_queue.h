@@ -9,7 +9,7 @@
  * Thread-safe lock-free queue implementation.
  * Number enqueue() threads MUST be <= EVENT_QUEUE_SIZE.
  */
-# define EVENT_QUEUE_SIZE	1024
+# define EVENT_QUEUE_SIZE	(10*1024)
 
 /*
  *  struct s_philo_event -- event structure
@@ -40,5 +40,7 @@ void					enqueue(t_usec ts, enum e_status ev_type,
  * call enqueue() concurrently and one calls dequeue().
  */
 struct s_philo_event	dequeue();
+
+void clean__();
 
 #endif

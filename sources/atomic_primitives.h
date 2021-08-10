@@ -36,14 +36,13 @@ void		swap(uint64_t *ptr, uint64_t new_val);
  * Proceeds the following operation:
  * ATOMICALLY {
  *     old_value = *num;
- *     *num = (*num + to_add) % mod;
+ *     *num = (old_value + to_add) % mod;
  *     return old_value;
  * }
  *
  * return: old_value, value before change happened
  *
  */
-uint64_t	fetch_add_mod(uint64_t *num, uint64_t to_add, uint64_t mod);
-
+uint64_t	fetch_add(uint64_t *num, uint64_t to_add);
 
 #endif

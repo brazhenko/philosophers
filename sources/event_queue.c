@@ -21,14 +21,16 @@ void	enqueue(t_usec ts, enum e_status ev_type, size_t philo_id)
 {
 	size_t		my_tail;
 
-	my_tail = fetch_add_mod(&g_tail, 1, EVENT_QUEUE_SIZE);
+	my_tail = fetch_add(&g_tail, 1) % EVENT_QUEUE_SIZE;
+//	my_tail = fetch_add_mod(&g_tail, 1, EVENT_QUEUE_SIZE);
 	while (g_queue[my_tail].ready)
-		usleep(10);
+		usleep(75);
 	g_queue[my_tail].ts = ts;
 	g_queue[my_tail].ev_type = ev_type;
 	g_queue[my_tail].philo_id = philo_id;
 	swap(&g_queue[my_tail].ready, 1);
 }
+
 
 struct s_philo_event	dequeue()
 {
@@ -38,7 +40,7 @@ struct s_philo_event	dequeue()
 	my_ready = g_queue[g_head].ready;
 	while (!my_ready)
 	{
-		usleep(10);
+		usleep(250);
 		my_ready = g_queue[g_head].ready;
 	}
 	ret.ts = g_queue[g_head].ts;
@@ -47,4 +49,11 @@ struct s_philo_event	dequeue()
 	compare_and_swap(&g_queue[g_head].ready, 1, 0);
 	g_head = (g_head + 1) % EVENT_QUEUE_SIZE;
 	return (ret);
+}
+#include <string.h>
+void clean__()
+{
+	memset(&g_queue, 0, sizeof g_queue);
+	g_head = 0;
+	g_tail = 0;
 }

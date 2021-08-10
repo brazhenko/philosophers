@@ -63,37 +63,11 @@ I had to use some tricks
 
 
 #### General overview
-One fork -- one mutex, one philo -- one thread. 
-
+One fork — one mutex, one philo — one thread. 
 
 #### Deadlock safety
-Let the forks be numbered in circle `1, 2, ..., n`. To avoid deadlock each 
-philosopher should respect the rules:
-* the first fork to take is a fork with a **smaller number**
-* put down forks in a **reverse** order (i.e. **bigger** fork first)
-
-#### Eating order
-Split philosophers in two equal groups `EVEN` and `ODD` (and group `EXTRA`
-with 1 philosopher if the number of philosophers is odd).
-`EVEN` eat first, then `ODD` and then `EXTRA`
-(if exist). The mechanism is encapsulated in `fork`s -- mutex-like types.
-
-#### Time sync
-It is obvious that having a particular order in which philosophers should eat
-we set a [linear order](https://en.wikipedia.org/wiki/Total_order) on a set
-of events (every start/end of eating, sleeping, thinking form a set of _events_).
-Our job is to keep it coherent.
-
-
-#### Stopping the simulation
-Nothing can be printed after the philosopher dies or every philosopher ate
-defined amount of times. After that we need some queue-like thread-safe data 
-structure to `enqueue()` events from threads; `dequeue()` and handle them in
-the main thread. Lock-free circular queue was selected.
-
-### Proof of correctness
-#### Deadlock safety
-Let red arrow means "philosopher holds a fork" and blue one means
+Let the forks be numbered in circle `1, 2, ..., n` and
+red arrow means "philosopher holds a fork" and blue one means
 "philosopher is stuck on trying to pick up a fork". _Deadlock_ happens
 if and only if cycle in a graph happens.
 
@@ -101,9 +75,64 @@ if and only if cycle in a graph happens.
   <img src="resources/philos_color.png" />
 </p>
 
+To avoid such situation each philosopher should respect the rules:
+* the first fork to take is a fork with a **smaller number**
+* put down forks in a **reverse** order (i.e. **bigger** fork first)
+
+#### Eating order
+Split philosophers in two equal groups `EVEN` and `ODD` (and group `EXTRA`
+with 1 philosopher if the number of philosophers is odd).
+`EVEN` eat first, then `ODD` and then `EXTRA`
+(if exist). The mechanism is encapsulated in `fork`s — mutex-like types.
+
+#### Time sync
+It is obvious that having a particular order in which philosophers should eat
+we set a [linear order](https://en.wikipedia.org/wiki/Total_order) on a set
+of events (every start/end of eating, sleeping, thinking form a set of _events_).
+
+Let's check it. Here's the order on one philosopher's actions.
+
+<p align="center">
+  <img src="resources/order_2.png" />
+</p>
+
+According to the order on fork (i.e. put the fork by philosopher
+1 is earlier then take the fork by philosopher 2) we can produce
+a linear order.
+
+<p align="center">
+  <img src="resources/order_3.png" />
+</p>
+
+After that, forks can be used for time sync by each philosopher.
+Each philosopher tries to do something like that:
+
+0. Init local timer `= 0`
+1. Try take first fork
+3. If not success goto `1.`
+4. Try take second fork
+5. If not success put fown first fork and goto `1.`
+4. Update local timer `= MAX(timer, MAX(ts on fork1, ts on fork2))`
+5. Eat, update local timer according to `time_to_eat`
+6. Put second fork (and set its time to local timer)
+7. Put first fork (and set its time to local timer)
+8. Sleep, update local timer according to `time_to_sleep`
+9. goto `1.`
+
+In fact it is a bit more complicated because of
+some corner cases and the order in which philosophers
+are permitted to take forks. 
+
+#### Stopping the simulation
+Nothing can be printed after the philosopher dies or every philosopher ate
+defined amount of times. After that we need some queue-like thread-safe data 
+structure to `enqueue()` events from threads; `dequeue()` and handle them in
+the main thread. Lock-free circular queue was selected.
 
 
 ### Implemetation
+
+
 
 ### Usage
 ```zsh 
@@ -114,4 +143,4 @@ make
 ```
 
 ### Further exploration
-How to implement lock-free non-circular queue -- [link](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.53.8674&rep=rep1&type=pdf).
+How to implement lock-free non-circular queue — [link](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.53.8674&rep=rep1&type=pdf).

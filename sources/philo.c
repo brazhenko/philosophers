@@ -36,7 +36,7 @@ void	philo_think(t_philo_context *ctx)
 	enqueue(ctx->timestamp, Eating, ctx->id);
 	ctx->times_ate++;
 	if (ctx->times_ate == g_context.number_of_times_each_philo_must_eat && g_context.yes)
-		fetch_add_mod(&g_context.number_of_philos_completed_eat_task, 1, ULONG_MAX);
+		fetch_add(&g_context.number_of_philos_completed_eat_task, 1);
 	if (g_context.number_of_philos_completed_eat_task == g_context.number_of_philos)
 		enqueue(ctx->timestamp, AllAteNTimes, ctx->id);
 }
@@ -73,16 +73,18 @@ void 	philo_sync(t_philo_context *ctx)
 
 //	printf("id: %zu, myts: %d | ts1, %llu | ts2: %llu | lasttimeate: %d, end: %d\n", ctx->id, ctx->timestamp, ts1, ts2, ctx->last_time_ate, ctx->end_of_current_action);
 
-	if (ctx->last_time_ate + g_context.time_to_die <= ctx->timestamp
+	if (ctx->last_time_ate + g_context.time_to_die < ctx->timestamp
 		&&
-		((
-			ctx->last_time_ate + g_context.time_to_die < ts1
-			|| ctx->last_time_ate + g_context.time_to_die < ts2
-		) || (ctx->end_of_current_action < ctx->timestamp)))
+		((ctx->last_time_ate + g_context.time_to_die < ts1
+			|| ctx->last_time_ate + g_context.time_to_die < ts2)
+		|| ctx->end_of_current_action < ctx->timestamp))
 	{
 		ctx->timestamp = MIN(ctx->timestamp, MAX(ts1, ts2));
 		philo_die(ctx);
 	}
+	else if (ctx->last_time_ate + g_context.time_to_die < ctx->timestamp
+				&& ctx->first_fork == ctx->second_fork)
+		philo_die(ctx);
 }
 
 _Noreturn void*	philo_life(void *a)

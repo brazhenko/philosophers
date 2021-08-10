@@ -42,6 +42,16 @@ uint64_t	next_turn(
 	return (current_turn ^ 0x1);
 }
 
+int 	fork_try_take(t_fork *fork)
+{
+	uint64_t	data = fork->data;;
+	int res;
+
+	res = compare_and_swap(&fork->data, data, data | FORK_LOCKED);
+	return (res);
+}
+
+
 void 	fork_put_down(t_fork *fork)
 {
 	swap(&fork->data, fork->data & ~FORK_LOCKED);
