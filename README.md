@@ -105,6 +105,23 @@ a linear order.
 </p>
 
 After that, forks can be used for time sync by each philosopher.
+Each philosopher tries to do something like that:
+
+0. Init local timer `= 0`
+1. Try take first fork
+3. If not success goto `1.`
+4. Try take second fork
+5. If not success put fown first fork and goto `1.`
+4. Update local timer `= MAX(timer, MAX(ts on fork1, ts on fork2))`
+5. Eat, update local timer according to `time_to_eat`
+6. Put second fork (and set its time to local timer)
+7. Put first fork (and set its time to local timer)
+8. Sleep, update local timer according to `time_to_sleep`
+9. goto `1.`
+
+In fact it is a bit more complicated because of
+some corner cases and the order in which philosophers
+are permitted to take forks. 
 
 #### Stopping the simulation
 Nothing can be printed after the philosopher dies or every philosopher ate
