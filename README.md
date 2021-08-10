@@ -67,8 +67,16 @@ One fork — one mutex, one philo — one thread.
 
 
 #### Deadlock safety
-Let the forks be numbered in circle `1, 2, ..., n`. To avoid deadlock each 
-philosopher should respect the rules:
+Let the forks be numbered in circle `1, 2, ..., n` and
+red arrow means "philosopher holds a fork" and blue one means
+"philosopher is stuck on trying to pick up a fork". _Deadlock_ happens
+if and only if cycle in a graph happens.
+
+<p align="center">
+  <img src="resources/philos_color.png" />
+</p>
+
+To avoid such situation each philosopher should respect the rules:
 * the first fork to take is a fork with a **smaller number**
 * put down forks in a **reverse** order (i.e. **bigger** fork first)
 
@@ -83,6 +91,19 @@ It is obvious that having a particular order in which philosophers should eat
 we set a [linear order](https://en.wikipedia.org/wiki/Total_order) on a set
 of events (every start/end of eating, sleeping, thinking form a set of _events_).
 Our job is to keep it coherent.
+
+<p align="center">
+  <img src="resources/order_1.png" />
+</p>
+
+<p align="center">
+  <img src="resources/order_2.png" />
+</p>
+
+<p align="center">
+  <img src="resources/order_3.png" />
+</p>
+
 
 
 #### Stopping the simulation
