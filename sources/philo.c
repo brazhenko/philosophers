@@ -73,16 +73,18 @@ void 	philo_sync(t_philo_context *ctx)
 
 //	printf("id: %zu, myts: %d | ts1, %llu | ts2: %llu | lasttimeate: %d, end: %d\n", ctx->id, ctx->timestamp, ts1, ts2, ctx->last_time_ate, ctx->end_of_current_action);
 
-	if (ctx->last_time_ate + g_context.time_to_die <= ctx->timestamp
+	if (ctx->last_time_ate + g_context.time_to_die < ctx->timestamp
 		&&
-		((
-			ctx->last_time_ate + g_context.time_to_die < ts1
-			|| ctx->last_time_ate + g_context.time_to_die < ts2
-		) || (ctx->end_of_current_action < ctx->timestamp)))
+		((ctx->last_time_ate + g_context.time_to_die < ts1
+			|| ctx->last_time_ate + g_context.time_to_die < ts2)
+		|| ctx->end_of_current_action < ctx->timestamp))
 	{
 		ctx->timestamp = MIN(ctx->timestamp, MAX(ts1, ts2));
 		philo_die(ctx);
 	}
+	else if (ctx->last_time_ate + g_context.time_to_die < ctx->timestamp
+				&& ctx->first_fork == ctx->second_fork)
+		philo_die(ctx);
 }
 
 _Noreturn void*	philo_life(void *a)
