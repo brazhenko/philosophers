@@ -65,7 +65,6 @@ I had to use some tricks
 #### General overview
 One fork — one mutex, one philo — one thread. 
 
-
 #### Deadlock safety
 Let the forks be numbered in circle `1, 2, ..., n` and
 red arrow means "philosopher holds a fork" and blue one means
@@ -90,21 +89,22 @@ with 1 philosopher if the number of philosophers is odd).
 It is obvious that having a particular order in which philosophers should eat
 we set a [linear order](https://en.wikipedia.org/wiki/Total_order) on a set
 of events (every start/end of eating, sleeping, thinking form a set of _events_).
-Our job is to keep it coherent.
 
-<p align="center">
-  <img src="resources/order_1.png" />
-</p>
+Let's check it. Here's the order on one philosopher's actions.
 
 <p align="center">
   <img src="resources/order_2.png" />
 </p>
 
+According to the order on fork (i.e. put the fork by philosopher
+1 is earlier then take the fork by philosopher 2) we can produce
+a linear order.
+
 <p align="center">
   <img src="resources/order_3.png" />
 </p>
 
-
+After that, forks can be used for time sync by each philosopher.
 
 #### Stopping the simulation
 Nothing can be printed after the philosopher dies or every philosopher ate
