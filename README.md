@@ -142,5 +142,10 @@ make
 ./philo 5 400 200 200
 ```
 
+### Test cases
+```zsh
+
+```
+
 ### Further exploration
 How to implement lock-free non-circular queue — [link](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.53.8674&rep=rep1&type=pdf).

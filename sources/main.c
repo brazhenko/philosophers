@@ -23,13 +23,6 @@ static void	dump_event(struct s_philo_event* ev);
 
 int main(int argc, char **argv)
 {
-//	uint64_t a = 1, b = 5, ret = 0;
-//
-//	ret = fetch_add(&a, b);
-//
-//	printf("%llu, ret: %llu\n", a, ret);
-//
-//	return 1;
 	struct s_philo_event	ev;
 
 	memset(&ev, 0x0, sizeof ev);

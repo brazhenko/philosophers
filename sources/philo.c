@@ -70,21 +70,27 @@ void 	philo_sync(t_philo_context *ctx)
 {
 	const uint64_t	ts1 = g_context.forks[ctx->first_fork].data & FORK_TS;
 	const uint64_t	ts2 = g_context.forks[ctx->second_fork].data & FORK_TS;
+	const int       time_elapsed = ctx->last_time_ate + g_context.time_to_die < ctx->timestamp;
 
 //	printf("id: %zu, myts: %d | ts1, %llu | ts2: %llu | lasttimeate: %d, end: %d\n", ctx->id, ctx->timestamp, ts1, ts2, ctx->last_time_ate, ctx->end_of_current_action);
 
-	if (ctx->last_time_ate + g_context.time_to_die < ctx->timestamp
-		&&
-		((ctx->last_time_ate + g_context.time_to_die < ts1
-			|| ctx->last_time_ate + g_context.time_to_die < ts2)
-		|| ctx->end_of_current_action < ctx->timestamp))
-	{
-		ctx->timestamp = MIN(ctx->timestamp, MAX(ts1, ts2));
-		philo_die(ctx);
-	}
-	else if (ctx->last_time_ate + g_context.time_to_die < ctx->timestamp
-				&& ctx->first_fork == ctx->second_fork)
-		philo_die(ctx);
+    if (ctx->status == Thinking
+        && ctx->last_time_ate + g_context.time_to_die < ctx->timestamp
+        && (ctx->last_time_ate + g_context.time_to_die < ts1
+        || ctx->last_time_ate + g_context.time_to_die < ts2))
+    {
+        ctx->timestamp = MIN(ctx->timestamp, MAX(ts1, ts2));
+        philo_die(ctx);
+    }
+    else if (ctx->status == Thinking
+        && ctx->first_fork == ctx->second_fork)
+        philo_die(ctx);
+    else if (ctx->status == Eating
+        && ctx->last_time_ate + g_context.time_to_die < ctx->timestamp)
+        philo_die(ctx);
+    else if (ctx->status == Sleeping
+        && ctx->last_time_ate + g_context.time_to_die < ctx->timestamp)
+        philo_die(ctx);
 }
 
 _Noreturn void*	philo_life(void *a)
