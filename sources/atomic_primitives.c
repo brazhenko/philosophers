@@ -32,12 +32,11 @@ void 	swap(uint64_t *ptr, uint64_t new_val)
 
 uint64_t	fetch_add(uint64_t *num, uint64_t to_add)
 {
-	int	ret;
+	uint64_t	ret;
 	asm volatile(
-	"lock xadd %0, (%1);"
+		"lock xadd %0, (%1);"
 		: "=a"(ret)
 		: "r"(num), "a"(to_add)
-		: "memory"
-	);
+		: "memory");
 	return ret;
 }

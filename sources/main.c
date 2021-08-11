@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	}
 	while (ev.ev_type != Died && ev.ev_type != AllAteNTimes)
 	{
-		ev = dequeue();
+		ev = ev_dequeue();
 		dump_event(&ev);
 	}
 	return (EXIT_SUCCESS);

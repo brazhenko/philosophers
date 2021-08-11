@@ -33,12 +33,12 @@ void	philo_think(t_philo_context *ctx)
 	g_context.forks[ctx->first_fork].data = (g_context.forks[ctx->first_fork].data & ~FORK_TS) | ctx->end_of_current_action;
 	g_context.forks[ctx->second_fork].data = (g_context.forks[ctx->second_fork].data & ~FORK_TS) | ctx->end_of_current_action;
 
-	enqueue(ctx->timestamp, Eating, ctx->id);
+	ev_enqueue(ctx->timestamp, Eating, ctx->id);
 	ctx->times_ate++;
 	if (ctx->times_ate == g_context.number_of_times_each_philo_must_eat && g_context.yes)
 		fetch_add(&g_context.number_of_philos_completed_eat_task, 1);
 	if (g_context.number_of_philos_completed_eat_task == g_context.number_of_philos)
-		enqueue(ctx->timestamp, AllAteNTimes, ctx->id);
+		ev_enqueue(ctx->timestamp, AllAteNTimes, ctx->id);
 }
 
 
@@ -50,7 +50,7 @@ void	philo_eat(t_philo_context *ctx)
 			ctx->timestamp, ctx->first_fork, g_context.number_of_philos);
 	ctx->status = Sleeping;
 	ctx->end_of_current_action = ctx->timestamp + g_context.time_to_sleep;
-	enqueue(ctx->timestamp, Sleeping, ctx->id);
+	ev_enqueue(ctx->timestamp, Sleeping, ctx->id);
 }
 
 void	philo_sleep(t_philo_context *ctx)
@@ -58,12 +58,12 @@ void	philo_sleep(t_philo_context *ctx)
 	ctx->status = Thinking;
 	ctx->last_time_awake = ctx->timestamp;
 	ctx->end_of_current_action = INT_MAX;
-	enqueue(ctx->timestamp, Thinking, ctx->id);
+	ev_enqueue(ctx->timestamp, Thinking, ctx->id);
 }
 
 void 	philo_die(t_philo_context *ctx)
 {
-	enqueue(ctx->timestamp, Died, ctx->id);
+	ev_enqueue(ctx->timestamp, Died, ctx->id);
 }
 
 void 	philo_sync(t_philo_context *ctx)
@@ -102,7 +102,7 @@ _Noreturn void*	philo_life(void *a)
 	ctx.second_fork = MAX(ctx.id,  (ctx.id + 1) % g_context.number_of_philos);
 	ctx.end_of_current_action = INT_MAX;
 
-	enqueue(ctx.timestamp, Thinking, ctx.id);
+	ev_enqueue(ctx.timestamp, Thinking, ctx.id);
 	while (true)
 	{
 		philo_sync(&ctx);

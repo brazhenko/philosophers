@@ -1,3 +1,5 @@
+#include <__wctype.h>
+
 #ifndef FORK_H
 # define FORK_H
 
@@ -17,11 +19,9 @@
 # define FORK_LOCKED			0x0100000000ULL
 # define FORK_TS				0x00FFFFFFFFULL
 
-
 struct s_fork {
 	uint64_t	data;
-} __attribute__ ((aligned (DEFAULT_CACHE_LINE_SIZE)));
-
+} CPU_CACHE_ALIGN;
 
 typedef struct s_fork	t_fork;
 

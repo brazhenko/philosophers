@@ -26,7 +26,7 @@ void	ms_usleep(size_t sleep_time_in_ms)
 	start_time = timeval_to_size_t(start_time_tv);
 	while (1)
 	{
-		usleep(10);
+		usleep(100);
 		if (get_current_time() - start_time >= sleep_time_in_ms)
 			return ;
 	}

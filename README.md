@@ -126,7 +126,7 @@ are permitted to take forks.
 #### Stopping the simulation
 Nothing can be printed after the philosopher dies or every philosopher ate
 defined amount of times. After that we need some queue-like thread-safe data 
-structure to `enqueue()` events from threads; `dequeue()` and handle them in
+structure to `ev_enqueue()` events from threads; `ev_dequeue()` and handle them in
 the main thread. Lock-free circular queue was selected.
 
 
