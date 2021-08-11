@@ -35,8 +35,8 @@ uint64_t	fetch_add(uint64_t *num, uint64_t to_add)
 	uint64_t	ret;
 	asm volatile(
 		"lock xadd %0, (%1);"
-		: "=a"(ret)
-		: "r"(num), "a"(to_add)
+		: "=a" (ret)
+		: "r" (num), "a" (to_add)
 		: "memory");
 	return ret;
 }

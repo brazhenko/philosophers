@@ -18,7 +18,6 @@ void	philo_think(t_philo_context *ctx)
 
 	if (!fork_try_take_ts_sync(g_context.forks + ctx->first_fork, &ts1, ctx->label))
 		return ;
-//	g_context.forks[ctx->first_fork].data = (g_context.forks[ctx->first_fork].data & ~FORK_TS) | (MAX(ts1, ctx->last_time_awake) + g_context.time_to_eat);
 	if (!fork_try_take_ts_sync(g_context.forks + ctx->second_fork, &ts2, ctx->label))
 	{
 		fork_put_down(g_context.forks + ctx->first_fork);
@@ -36,9 +35,8 @@ void	philo_think(t_philo_context *ctx)
 	ev_enqueue(ctx->timestamp, Eating, ctx->id);
 	ctx->times_ate++;
 	if (ctx->times_ate == g_context.number_of_times_each_philo_must_eat && g_context.yes)
-		fetch_add(&g_context.number_of_philos_completed_eat_task, 1);
-	if (g_context.number_of_philos_completed_eat_task == g_context.number_of_philos)
-		ev_enqueue(ctx->timestamp, AllAteNTimes, ctx->id);
+		if (g_context.number_of_philos == 1 + fetch_add(&g_context.number_of_philos_completed_eat_task, 1))
+		    ev_enqueue(ctx->timestamp, AllAteNTimes, ctx->id);
 }
 
 
@@ -70,19 +68,20 @@ void 	philo_sync(t_philo_context *ctx)
 {
 	const uint64_t	ts1 = g_context.forks[ctx->first_fork].data & FORK_TS;
 	const uint64_t	ts2 = g_context.forks[ctx->second_fork].data & FORK_TS;
-	const int       time_elapsed = ctx->last_time_ate + g_context.time_to_die < ctx->timestamp;
-
-//	printf("id: %zu, myts: %d | ts1, %llu | ts2: %llu | lasttimeate: %d, end: %d\n", ctx->id, ctx->timestamp, ts1, ts2, ctx->last_time_ate, ctx->end_of_current_action);
 
     if (ctx->status == Thinking
-        && ctx->last_time_ate + g_context.time_to_die < ctx->timestamp
-        && (ctx->last_time_ate + g_context.time_to_die < ts1
-        || ctx->last_time_ate + g_context.time_to_die < ts2))
+        && ctx->last_time_ate + g_context.time_to_die < ctx->timestamp)
     {
-        ctx->timestamp = MIN(ctx->timestamp, MAX(ts1, ts2));
-        philo_die(ctx);
+//        printf("id: %zu, myts: %d | ts1, %llu | ts2: %llu | lasttimeate: %d, end: %d\n", ctx->id, ctx->timestamp, ts1, ts2, ctx->last_time_ate, ctx->end_of_current_action);
+        if (ctx->last_time_ate + g_context.time_to_die < ts1
+        || ctx->last_time_ate + g_context.time_to_die < ts2)
+        {
+            ctx->timestamp = ctx->last_time_ate + g_context.time_to_die;
+            philo_die(ctx);
+        }
     }
     else if (ctx->status == Thinking
+        && ctx->last_time_ate + g_context.time_to_die < ctx->timestamp
         && ctx->first_fork == ctx->second_fork)
         philo_die(ctx);
     else if (ctx->status == Eating

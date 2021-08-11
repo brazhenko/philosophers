@@ -139,11 +139,23 @@ the main thread. Lock-free circular queue was selected.
 make
 # ./philo num_of_ph time_to_die time_to_eat time_to_sleep [number_of_eat]
 # Last parameter is optional, can be used to limit the simulation time
-./philo 5 400 200 200
+./philo 4 400 200 200
 ```
 
 ### Test cases
 ```zsh
+./philo 0 100 100 100   # hang forever or exit with error
+./philo 1 100 100 100   # should die
+./philo 2 2 1 1         # should live
+./philo 2 400 200 200   # should live
+./philo 2 400 201 200   # should die
+./philo 2 399 200 200   # should die
+./philo 2 100 300 50    # should die
+./philo 2 100 50 100    # should die
+./philo 3 99 33 33      # should live
+./philo 3 99 34 33      # should die
+./philo 4 400 200 200   # should live
+./philo 5 400 200 200   # should die
 
 ```
 

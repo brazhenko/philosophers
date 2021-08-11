@@ -51,7 +51,6 @@ int 	fork_try_take(t_fork *fork)
 	return (res);
 }
 
-
 void 	fork_put_down(t_fork *fork)
 {
 	swap(&fork->data, fork->data & ~FORK_LOCKED);

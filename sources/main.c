@@ -46,11 +46,11 @@ struct event_mapper {
 };
 
 static const struct event_mapper evm[] = {
-		  {Thinking, "Thinking", ANSI_COLOR_BLUE}
-		, {Eating, "Eating", ANSI_COLOR_CYAN}
-		, {Sleeping, "Sleeping", ANSI_COLOR_MAGENTA}
-		, {Died, "Died", ANSI_COLOR_RED}
-		, {AllAteNTimes,"All done", ANSI_COLOR_RED}
+      {Thinking, "Thinking", ANSI_COLOR_BLUE}
+    , {Eating, "Eating", ANSI_COLOR_CYAN}
+    , {Sleeping, "Sleeping", ANSI_COLOR_MAGENTA}
+    , {Died, "Died", ANSI_COLOR_RED}
+    , {AllAteNTimes,"All done", ANSI_COLOR_RED}
 };
 
 static void 	dump_event(struct s_philo_event* ev)
@@ -71,6 +71,6 @@ static void 	dump_event(struct s_philo_event* ev)
 	}
 	printf("%4$s[%1$7d] %5$s[%2$3zu] %7$s[%3$10s]%6$s\n",
 			ev->ts, ev->philo_id, ev_type_string,
-			ANSI_COLOR_GREEN, ANSI_COLOR_YELLOW,
+			ANSI_COLOR_WHITE, ANSI_COLOR_YELLOW,
 			ANSI_COLOR_RESET, event_color);
 }

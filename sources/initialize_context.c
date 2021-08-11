@@ -33,9 +33,9 @@ int				initialize_context(t_context *ctx, int argc, char **argv)
 	if (initialize_forks(ctx))
 		return (EXIT_FAILURE);
     printf("data: eat %d\n", ctx->time_to_eat);
-	printf("%s[%7s] %s[%3s] %s[%10s]%s\n",
+	printf("%s[%7s] [%3s] [%10s]%s\n",
 			ANSI_COLOR_GREEN, "time",
-			ANSI_COLOR_YELLOW, "id", ANSI_COLOR_RED, "event", ANSI_COLOR_RESET);
+			"id", "event", ANSI_COLOR_RESET);
 	if (initialize_philos(ctx))
 		return (EXIT_FAILURE);
 	if (detach_philos(ctx))
