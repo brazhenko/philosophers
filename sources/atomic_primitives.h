@@ -1,9 +1,9 @@
 #ifndef ATOMIC_PRIMITIVES_H
 # define ATOMIC_PRIMITIVES_H
 
-#ifndef __x86_64__
-# error "This implemetation is for x86_64 arch only"
-#endif
+# ifndef __x86_64__
+#  error "This implemetation is for x86_64 arch only"
+# endif
 
 # include <stdint.h>
 # define DEFAULT_CACHE_LINE_SIZE 64

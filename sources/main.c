@@ -8,20 +8,20 @@
 t_context	g_context;
 
 /*
- * Philosophers:
- * 	./philo \
- * 		num_of_philos \
- * 		time_to_die \
- * 		time_to_eat \
- * 		time_to_sleep \
- * 		[number_of_times_each_philosopher_must_eat]
- *
- */
+** Philosophers:
+** 	./philo
+** 		num_of_philos
+** 		time_to_die
+** 		time_to_eat
+** 		time_to_sleep
+**		[number_of_times_each_philosopher_must_eat]
+**
+*/
 
 int			initialize_context(t_context *ctx, int argc, char **argv);
-static void	dump_event(struct s_philo_event* ev);
+static void	dump_event(struct s_philo_event *ev);
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
 	struct s_philo_event	ev;
 
@@ -39,38 +39,40 @@ int main(int argc, char **argv)
 	return (EXIT_SUCCESS);
 }
 
-struct event_mapper {
+struct s_event_mapper {
 	enum e_status	ev_type;
 	const char		*ev_type_string;
 	const char		*ev_type_color_string;
 };
 
-static const struct event_mapper evm[] = {
-      {Thinking, "Thinking", ANSI_COLOR_BLUE}
-    , {Eating, "Eating", ANSI_COLOR_CYAN}
-    , {Sleeping, "Sleeping", ANSI_COLOR_MAGENTA}
-    , {Died, "Died", ANSI_COLOR_RED}
-    , {AllAteNTimes,"All done", ANSI_COLOR_RED}
+static const struct	s_event_mapper
+			g_evm[] = {
+	{Thinking, "Thinking", ANSI_COLOR_BLUE}
+	, {Eating, "Eating", ANSI_COLOR_CYAN}
+	, {Sleeping, "Sleeping", ANSI_COLOR_MAGENTA}
+	, {Died, "Died", ANSI_COLOR_RED}
+	, {AllAteNTimes, "All done", ANSI_COLOR_RED}
 };
 
-static void 	dump_event(struct s_philo_event* ev)
+static void	dump_event(struct s_philo_event *ev)
 {
-	const char *ev_type_string;
-	const char *event_color = ANSI_COLOR_RESET;
+	const char	*ev_type_string;
+	const char	*event_color = ANSI_COLOR_RESET;
+	int			i;
 
-	int i = 0;
-	while (i < sizeof evm / sizeof evm[0])
+	i = 0;
+	while (i < sizeof g_evm / sizeof g_evm[0])
 	{
-		if (ev->ev_type == evm[i].ev_type)
+		if (ev->ev_type == g_evm[i].ev_type)
 		{
-			ev_type_string = evm[i].ev_type_string;
-			event_color = evm[i].ev_type_color_string;
+			ev_type_string = g_evm[i].ev_type_string;
+			event_color = g_evm[i].ev_type_color_string;
 			break ;
 		}
 		i++;
 	}
 	printf("%4$s[%1$7d] %5$s[%2$3zu] %7$s[%3$10s]%6$s\n",
-			ev->ts, ev->philo_id, ev_type_string,
-			ANSI_COLOR_WHITE, ANSI_COLOR_YELLOW,
-			ANSI_COLOR_RESET, event_color);
+		ev->ts, ev->philo_id, ev_type_string,
+		ANSI_COLOR_WHITE, ANSI_COLOR_YELLOW,
+		ANSI_COLOR_RESET, event_color);
 }

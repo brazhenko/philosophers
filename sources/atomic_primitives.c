@@ -4,10 +4,11 @@
 
 #include <stdint.h>
 
-int 	compare_and_swap(uint64_t *ptr, uint64_t old_val, uint64_t new_val)
+int	compare_and_swap(uint64_t *ptr, uint64_t old_val, uint64_t new_val)
 {
 	int	ret;
-	asm	volatile (
+
+	asm volatile (
 		"mov %1, %%rax\n\t"
 		"lock\n\t"
 		"cmpxchg %2, (%3)\n\t"
@@ -18,12 +19,12 @@ int 	compare_and_swap(uint64_t *ptr, uint64_t old_val, uint64_t new_val)
 		: "+r" (ret)
 		: "r" (old_val), "r" (new_val), "r" (ptr)
 		: "memory", "%rax");
-	return ret;
+	return (ret);
 }
 
-void 	swap(uint64_t *ptr, uint64_t new_val)
+void	swap(uint64_t *ptr, uint64_t new_val)
 {
-	asm	volatile  (
+	asm volatile (
 		"lock\n\t"
 		"xchg %0, (%1)\n\t"
 		:: "r" (new_val), "r" (ptr)
@@ -33,10 +34,11 @@ void 	swap(uint64_t *ptr, uint64_t new_val)
 uint64_t	fetch_add(uint64_t *num, uint64_t to_add)
 {
 	uint64_t	ret;
-	asm volatile(
+
+	asm volatile (
 		"lock xadd %0, (%1);"
 		: "=a" (ret)
 		: "r" (num), "a" (to_add)
 		: "memory");
-	return ret;
+	return (ret);
 }

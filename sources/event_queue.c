@@ -7,10 +7,10 @@
 
 struct s_philo_event_internal
 {
-	t_usec			ts 			__attribute__ ((aligned(8)));
-	enum e_status	ev_type 	__attribute__ ((aligned(8)));
-	size_t			philo_id	__attribute__ ((aligned(8)));
-	uint64_t		ready		__attribute__ ((aligned(8)));
+	t_usec			ts __attribute__ ((aligned(8)));
+	enum e_status	ev_type __attribute__ ((aligned(8)));
+	size_t			philo_id __attribute__ ((aligned(8)));
+	uint64_t		ready __attribute__ ((aligned(8)));
 } CPU_CACHE_ALIGN;
 
 CPU_CACHE_ALIGN static struct s_philo_event_internal	g_queue[EVENT_QUEUE_SIZE];
@@ -30,8 +30,7 @@ void	ev_enqueue(t_usec ts, enum e_status ev_type, size_t philo_id)
 	swap(&g_queue[my_tail].ready, 1);
 }
 
-
-struct s_philo_event	ev_dequeue()
+struct s_philo_event	ev_dequeue(void)
 {
 	struct s_philo_event	ret;
 	volatile uint64_t		my_ready;
@@ -50,7 +49,7 @@ struct s_philo_event	ev_dequeue()
 	return (ret);
 }
 
-void ev_clean()
+void	ev_clean(void)
 {
 	memset(&g_queue, 0, sizeof g_queue);
 	g_head = 0;

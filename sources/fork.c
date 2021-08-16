@@ -42,24 +42,24 @@ uint64_t	next_turn(
 	return (current_turn ^ 0x1);
 }
 
-int 	fork_try_take(t_fork *fork)
+int	fork_try_take(t_fork *fork)
 {
-	uint64_t	data = fork->data;;
-	int res;
+	int				res;
+	const uint64_t	data = fork->data;
 
 	res = compare_and_swap(&fork->data, data, data | FORK_LOCKED);
 	return (res);
 }
 
-void 	fork_put_down(t_fork *fork)
+void	fork_put_down(t_fork *fork)
 {
 	swap(&fork->data, fork->data & ~FORK_LOCKED);
 }
 
-int 	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts, uint64_t label)
+int	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts, uint64_t label)
 {
 	uint64_t	data;
-	int 		res;
+	int			res;
 
 	data = fork->data;
 	if (data & FORK_LOCKED)
@@ -69,17 +69,16 @@ int 	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts, uint64_t label)
 	res = compare_and_swap(&fork->data, data, data | FORK_LOCKED);
 	if (res)
 		*ts = data & FORK_TS;
-	return res;
+	return (res);
 }
 
-void 	fork_put_down_ts_sync(t_fork *fork, uint32_t ts,
-		uint64_t fork_id, size_t num_of_philos)
+void	fork_put_down_ts_sync(t_fork *fork, uint32_t ts,
+			uint64_t fork_id, size_t num_of_philos)
 {
 	const uint64_t	new_val = ts;
 
 	swap(&fork->data,
 		new_val
 		| (next_turn(fork->data >> FORK_TURN_SHIFT,
-		fork_id, num_of_philos)
-		<< FORK_TURN_SHIFT));
+				fork_id, num_of_philos) << FORK_TURN_SHIFT));
 }

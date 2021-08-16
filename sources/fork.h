@@ -25,10 +25,11 @@ struct s_fork {
 
 typedef struct s_fork	t_fork;
 
-int 	fork_try_take(t_fork *fork);
-void 	fork_put_down(t_fork *fork);
+int		fork_try_take(t_fork *fork);
+void	fork_put_down(t_fork *fork);
 
-int 	fork_try_take_ts_sync(t_fork *fork, uint32_t *ts, uint64_t label);
-void 	fork_put_down_ts_sync(t_fork *fork, uint32_t ts, uint64_t label, size_t num_of_philos);
+int		fork_try_take_ts_sync(t_fork *fork, uint32_t *ts, uint64_t label);
+void	fork_put_down_ts_sync(t_fork *fork, uint32_t ts,
+			uint64_t label, size_t num_of_philos);
 
 #endif
