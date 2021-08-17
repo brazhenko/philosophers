@@ -16,9 +16,9 @@
  */
 struct s_philo_event
 {
-	t_usec			ts __attribute__ ((aligned(8)));
-	enum e_status	ev_type __attribute__ ((aligned(8)));
-	size_t			philo_id __attribute__ ((aligned(8)));
+	t_usec ts				ALIGN_8;
+	enum e_status ev_type	ALIGN_8;
+	size_t philo_id			ALIGN_8;
 };
 
 /*

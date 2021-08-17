@@ -32,7 +32,7 @@ void	ms_usleep(size_t sleep_time_in_ms)
 	}
 }
 
-bool is_digit(char c)
+bool	is_digit(char c)
 {
 	return ('0' <= c && c <= '9');
 }

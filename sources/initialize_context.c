@@ -15,14 +15,11 @@ static int		detach_philos(t_context *ctx);
 int	initialize_context(t_context *ctx, int argc, char **argv)
 {
 	memset(ctx, 0x0, sizeof (t_context));
-	if (argc < 5 || 6 < argc)
-		return (EXIT_FAILURE);
-	if (parse_size_t(argv[1], &ctx->number_of_philos)
-		|| parse_size_t(argv[2], (size_t*)&ctx->time_to_die)
-		|| parse_size_t(argv[3], (size_t*)&ctx->time_to_eat)
-		|| parse_size_t(argv[4], (size_t*)&ctx->time_to_sleep))
-		return (EXIT_FAILURE);
-	if (argc > 6)
+	if ((argc < 5 || 6 < argc)
+		|| (parse_size_t(argv[1], &ctx->number_of_philos)
+			|| parse_size_t(argv[2], (size_t*)&ctx->time_to_die)
+			|| parse_size_t(argv[3], (size_t*)&ctx->time_to_eat)
+			|| parse_size_t(argv[4], (size_t*)&ctx->time_to_sleep)))
 		return (EXIT_FAILURE);
 	if (argc == 6)
 	{

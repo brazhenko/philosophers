@@ -20,5 +20,4 @@ void	ms_usleep(size_t sleep_time_in_ms);
 bool	is_digit(char c);
 int		parse_size_t(const char *str, size_t *out);
 
-
 #endif

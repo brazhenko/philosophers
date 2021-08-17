@@ -4,6 +4,7 @@ project(philo C)
 set(CMAKE_C_STANDARD 99)
 
 add_definitions( -DCPU_CACHE_ALIGN=__attribute__\(\(aligned\(64\)\)\) )
+add_definitions( -DALIGN_8=__attribute__\(\(aligned\(8\)\)\) )
 
 add_executable(philo
 		sources/main.c
@@ -17,4 +18,4 @@ add_executable(philo
 		sources/event_queue.h
 		sources/philo.c
 		sources/atomic_primitives.c
-		sources/atomic_primitives.h)
+		sources/atomic_primitives.h sources/philo_life.c)
