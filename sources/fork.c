@@ -1,26 +1,26 @@
 #include "fork.h"
 #include "atomic_primitives.h"
 #include <stdint.h>
-#include <printf.h>
 
 /*
- * Turn is a state of t_fork mutex which defines
- * what group of threads `label` can successfully
- * call fork_try_take_ts_sync().
- *
- * To understand resource sharing strategy look at these diagram:
- *
- *                                               philo
- *  Turn: 00                   Turn: 01          count     Turn: 10
- *  (only even philos  anyway  (only odd philos  is odd    (the one 'extra' philo
- *  are permitted to  ───────> are permitted    ────────>  which is counted
- *  take this fork,            to take fork)               neither odd nor even
- *  default )                         |                    and has own permission for lock)
- *      ▲         philo_count is even │              anyway   │
- *      └─────────────────────────────┘───────────────────────┘
- *
- *
- */
+** Turn is a state of t_fork mutex which defines
+** what group of threads `label` can successfully
+** call fork_try_take_ts_sync().
+**
+** To understand resource sharing strategy look at these diagram:
+**
+**                                               philo
+**  Turn: 00                   Turn: 01          count    Turn: 10
+**  (only even philos  anyway  (only odd philos  is odd   (the one 'extra' philo
+**  are permitted to  ───────> are permitted    ────────> which is counted
+**  take this fork,            to take fork)              neither odd nor even
+**  default )                         |                   and has own permission
+**      ▲                             │                   for lock)
+**      │        philo_count is even  │              anyway   │
+**      └─────────────────────────────┘───────────────────────┘
+**
+**
+*/
 
 /*
  * Resolves which `turn` state is next, i.e.

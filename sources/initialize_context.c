@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
-_Noreturn void	*philo_life(void *a);
+_Noreturn void	*philo_life(void *param);
 static int		initialize_forks(t_context *ctx);
 static int		initialize_philos(t_context *ctx);
 static int		detach_philos(t_context *ctx);

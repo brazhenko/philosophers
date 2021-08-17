@@ -15,7 +15,7 @@ struct s_philo_event_internal
 
 typedef struct s_philo_event_internal	t_philo_event_internal;
 
-CPU_CACHE_ALIGN t_philo_event_internal
+CPU_CACHE_ALIGN	t_philo_event_internal
 								g_queue[EVENT_QUEUE_SIZE];
 CPU_CACHE_ALIGN uint64_t		g_head = 0;
 CPU_CACHE_ALIGN uint64_t		g_tail = 0;

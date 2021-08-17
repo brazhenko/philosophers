@@ -59,11 +59,11 @@ void	philo_init(t_philo_context *ctx, size_t id)
 	ev_enqueue(ctx->timestamp, Thinking, ctx->id);
 }
 
-_Noreturn void	*philo_life(void *a)
+_Noreturn void	*philo_life(void *param)
 {
 	t_philo_context		ctx;
 
-	philo_init(&ctx, (size_t)a);
+	philo_init(&ctx, (size_t)param);
 	while (true)
 	{
 		philo_sync(&ctx);
