@@ -14,7 +14,7 @@
 # define ANSI_COLOR_WHITE   "\x1b[40;1m"
 # define ANSI_COLOR_RESET   "\x1b[0m"
 
-size_t	timeval_to_size_t(struct timeval timeval);
+size_t	timeval_to_ms_integral(struct timeval timeval);
 size_t	get_current_time(void);
 void	ms_usleep(size_t sleep_time_in_ms);
 bool	is_digit(char c);

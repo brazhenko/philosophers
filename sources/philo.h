@@ -5,10 +5,11 @@
 # include <sys/time.h>
 # include <stdbool.h>
 # include <pthread.h>
+# include <unistd.h>
 
 # define DEFAULT_SLEEP_TIME_MS	1
 
-typedef __darwin_suseconds_t	t_usec;
+typedef unsigned int	t_usec;
 
 enum e_status
 {

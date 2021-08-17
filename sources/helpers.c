@@ -4,9 +4,9 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-size_t	timeval_to_size_t(struct timeval timeval)
+uint64_t	timeval_to_ms_integral(struct timeval timeval)
 {
-	return (timeval.tv_sec * 1000 + (size_t)(timeval.tv_usec * 0.001));
+	return (timeval.tv_sec * 1000 + timeval.tv_usec / 1000);
 }
 
 size_t	get_current_time(void)
@@ -14,7 +14,7 @@ size_t	get_current_time(void)
 	struct timeval	timeval;
 
 	gettimeofday(&timeval, NULL);
-	return (timeval_to_size_t(timeval));
+	return (timeval_to_ms_integral(timeval));
 }
 
 void	ms_usleep(size_t sleep_time_in_ms)
@@ -23,10 +23,10 @@ void	ms_usleep(size_t sleep_time_in_ms)
 	size_t			start_time;
 
 	gettimeofday(&start_time_tv, NULL);
-	start_time = timeval_to_size_t(start_time_tv);
+	start_time = timeval_to_ms_integral(start_time_tv);
 	while (1)
 	{
-		usleep(100);
+		usleep(50);
 		if (get_current_time() - start_time >= sleep_time_in_ms)
 			return ;
 	}
