@@ -23,6 +23,12 @@ void	philo_sync(t_philo_context *ctx)
 	const uint64_t	ts2 = g_context.forks[ctx->second_fork].data & FORK_TS;
 
 	if (ctx->status == Thinking
+		&& ctx->last_time_ate + g_context.time_to_die <= ctx->timestamp
+		&& ctx->first_fork == ctx->second_fork)
+	{
+		philo_die(ctx);
+	}
+	else if (ctx->status == Thinking
 		&& ctx->last_time_ate + g_context.time_to_die < ctx->timestamp)
 	{
 		if (ctx->last_time_ate + g_context.time_to_die < ts1
@@ -32,10 +38,6 @@ void	philo_sync(t_philo_context *ctx)
 			philo_die(ctx);
 		}
 	}
-	else if (ctx->status == Thinking
-		 && ctx->last_time_ate + g_context.time_to_die < ctx->timestamp
-		 && ctx->first_fork == ctx->second_fork)
-		philo_die(ctx);
 	else if (ctx->status == Eating
 		 && ctx->last_time_ate + g_context.time_to_die < ctx->timestamp)
 		philo_die(ctx);
