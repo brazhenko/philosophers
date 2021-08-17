@@ -73,13 +73,13 @@ static void test_queue_mutex(int thread_count) {
 
 int writer2(size_t count) {
 	for (size_t i = 0; i < count; i++) {
-		enqueue(0, Eating, i);
+		ev_enqueue(0, Eating, i);
 	}
 	return 1;
 }
 int reader2(size_t count) {
 	for (size_t i = 0; i < count * TCOUNT; i++) {
-		dequeue();
+		ev_dequeue();
 	}
 	return 1;
 }
@@ -118,7 +118,7 @@ static void BM_queue_mutex(benchmark::State& state) {
 
 static void BM_lf_queue(benchmark::State& state) {
 	for (auto _ : state) {
-		clean__();
+		ev_clean();
 		test_queue_lf(TCOUNT);
 	}
 }

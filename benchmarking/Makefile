@@ -1,13 +1,12 @@
 # COMPILER_OPTIONS
 COMPILER = clang++
-CFLAGS =   -std=c++11 -I benchmark/include -O2
+CFLAGS =   -std=c++11 -I benchmark/include -O2 -DALIGN_8=__attribute__\(\(aligned\(8\)\)\)
 LFLAGS =  $(CFLAGS) $(CPPFLAGS) -Wall -Wextra -Werror
 
 NAME = bench
 SOURCES = main.cpp external/fork.c external/atomic_primitives.c linked_queue/linked_queue.c external/event_queue.c
 OBJ_DIR = build
 OBJS = $(patsubst %, $(OBJ_DIR)/%.o, $(SOURCES))
-
 
 
 DEPS = $(patsubst %, $(OBJ_DIR)/%.d, $(SOURCES))

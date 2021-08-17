@@ -25,7 +25,7 @@ void	ev_enqueue(t_usec ts, enum e_status ev_type, size_t philo_id)
 
 	my_tail = fetch_add(&g_tail, 1) % EVENT_QUEUE_SIZE;
 	while (g_queue[my_tail].ready)
-		usleep(75);
+		pthread_yield_np();
 	g_queue[my_tail].ts = ts;
 	g_queue[my_tail].ev_type = ev_type;
 	g_queue[my_tail].philo_id = philo_id;
@@ -40,7 +40,7 @@ struct s_philo_event	ev_dequeue(void)
 	my_ready = g_queue[g_head].ready;
 	while (!my_ready)
 	{
-		usleep(250);
+		pthread_yield_np();
 		my_ready = g_queue[g_head].ready;
 	}
 	ret.ts = g_queue[g_head].ts;
