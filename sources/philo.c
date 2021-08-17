@@ -1,14 +1,9 @@
-#include "helpers.h"
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-#include <sys/param.h>
-#include <stdlib.h>
 #include "philo.h"
 #include "fork.h"
 #include "event_queue.h"
 #include "atomic_primitives.h"
-#include <pthread.h>
+#include <sys/param.h>
+#include <stdlib.h>
 
 extern t_context	g_context;
 

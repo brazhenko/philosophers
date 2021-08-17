@@ -21,7 +21,7 @@
 
 struct s_fork {
 	uint64_t	data;
-} CPU_CACHE_ALIGN;
+} __attribute__((aligned(64)));
 
 typedef struct s_fork	t_fork;
 

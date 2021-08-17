@@ -11,14 +11,13 @@ struct s_philo_event_internal
 	enum e_status ev_type	ALIGN_8;
 	size_t philo_id			ALIGN_8;
 	uint64_t ready			ALIGN_8;
-} CPU_CACHE_ALIGN;
+} __attribute__((aligned(64)));
 
 typedef struct s_philo_event_internal	t_philo_event_internal;
 
-CPU_CACHE_ALIGN	t_philo_event_internal
-								g_queue[EVENT_QUEUE_SIZE];
-CPU_CACHE_ALIGN uint64_t		g_head = 0;
-CPU_CACHE_ALIGN uint64_t		g_tail = 0;
+__attribute__((aligned(64))) t_philo_event_internal g_queue[EVENT_QUEUE_SIZE];
+__attribute__((aligned(64))) uint64_t g_head = 0;
+__attribute__((aligned(64))) uint64_t g_tail = 0;
 
 void	ev_enqueue(t_usec ts, enum e_status ev_type, size_t philo_id)
 {
@@ -54,7 +53,7 @@ struct s_philo_event	ev_dequeue(void)
 
 void	ev_clean(void)
 {
-	memset(&g_queue, 0, sizeof g_queue);
+	memset(&g_queue, 0x0, sizeof g_queue);
 	g_head = 0;
 	g_tail = 0;
 }
