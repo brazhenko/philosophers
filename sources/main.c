@@ -72,7 +72,7 @@ static void	dump_event(struct s_philo_event *ev)
 		i++;
 	}
 	printf("%4$s[%1$7d] %5$s[%2$3zu] %7$s[%3$10s]%6$s\n",
-		ev->ts, ev->philo_id, ev_type_string,
+		ev->ts, ev->philo_id + 1, ev_type_string,
 		ANSI_COLOR_WHITE, ANSI_COLOR_YELLOW,
 		ANSI_COLOR_RESET, event_color);
 }
