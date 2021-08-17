@@ -11,6 +11,7 @@ _Noreturn void	*philo_life(void *param);
 static int		initialize_forks(t_context *ctx);
 static int		initialize_philos(t_context *ctx);
 static int		detach_philos(t_context *ctx);
+static int		check_all_values(t_context *ctx);
 
 int	initialize_context(t_context *ctx, int argc, char **argv)
 {
@@ -27,15 +28,34 @@ int	initialize_context(t_context *ctx, int argc, char **argv)
 			return (EXIT_FAILURE);
 		ctx->yes = true;
 	}
+	if (check_all_values(ctx))
+		return (EXIT_FAILURE);
 	if (initialize_forks(ctx))
 		return (EXIT_FAILURE);
-	printf("data: eat %d\n", ctx->time_to_eat);
 	printf("%s[%7s] [%3s] [%10s]%s\n",
 		ANSI_COLOR_GREEN, "time",
 		"id", "event", ANSI_COLOR_RESET);
 	if (initialize_philos(ctx))
 		return (EXIT_FAILURE);
 	if (detach_philos(ctx))
+		return (EXIT_FAILURE);
+	return (EXIT_SUCCESS);
+}
+
+/*
+ *	check_all_values() is a hardcoded values bound checker
+ *
+ */
+
+static int	check_all_values(t_context *ctx)
+{
+	if (ctx->number_of_philos > 1000)
+		return (EXIT_FAILURE);
+	if (ctx->time_to_die < 1)
+		return (EXIT_FAILURE);
+	if (ctx->time_to_die < 1)
+		return (EXIT_FAILURE);
+	if (ctx->time_to_eat < 1)
 		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }

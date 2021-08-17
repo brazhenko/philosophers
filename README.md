@@ -166,6 +166,25 @@ make deps
 make
 ./bench
 ```
+```
+---------------------------------------------------------------------------------
+Benchmark                                       Time             CPU   Iterations
+---------------------------------------------------------------------------------
+BM_my_mutex                                  17.1 ns         17.1 ns     40969934 # custom mutex for task 
+BM_pthread_mutex                             19.8 ns         19.5 ns     36571667 # is slightly better
+BM_lf_queue/1/1000/iterations:5000          78530 ns        44657 ns         5000
+BM_lf_queue/2/1000/iterations:5000         140254 ns        64003 ns         5000
+BM_lf_queue/3/1000/iterations:5000         174750 ns        71811 ns         5000
+BM_lf_queue/5/1000/iterations:5000         246471 ns        94263 ns         5000
+BM_lf_queue/10/1000/iterations:5000        497876 ns       170561 ns         5000
+BM_lf_queue/20/1000/iterations:5000       1047377 ns       349872 ns         5000 # lock-free queue
+BM_queue_mutex/1/1000/iterations:5000     1686349 ns        50743 ns         5000 # is much better
+BM_queue_mutex/2/1000/iterations:5000     1051853 ns        65049 ns         5000
+BM_queue_mutex/3/1000/iterations:5000     1201973 ns        82149 ns         5000
+BM_queue_mutex/5/1000/iterations:5000     2127403 ns       176312 ns         5000
+BM_queue_mutex/10/1000/iterations:5000    3528934 ns       368174 ns         5000
+BM_queue_mutex/20/1000/iterations:5000    6564372 ns       695690 ns         5000
+```
  
 
 ### Further exploration

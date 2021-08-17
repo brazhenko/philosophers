@@ -49,14 +49,12 @@ static void test_queue_mutex(int thread_count, int write_per_thread) {
 	pthread_t arr[100];
 
 	for (int i = 0; i < thread_count; i++) {
-		if (pthread_create(&arr[i], NULL, (void*(*)(void*))test_queue_mutex_writer, (void*)(write_per_thread)))
-		{
+		if (pthread_create(&arr[i], NULL, (void*(*)(void*))test_queue_mutex_writer, (void*)(write_per_thread))) {
 			fprintf(stderr, "Error on creating thread :/\n");
 			exit (-1);
 		}
 	}
-	if (pthread_create(&arr[thread_count], NULL, (void*(*)(void*))test_queue_mutex_reader, (void*)(thread_count * write_per_thread)))
-	{
+	if (pthread_create(&arr[thread_count], NULL, (void*(*)(void*))test_queue_mutex_reader, (void*)(thread_count * write_per_thread))) {
 		fprintf(stderr, "Error on creating thread :/\n");
 		exit (-1);
 	}
@@ -90,8 +88,7 @@ static void test_queue_lf(int thread_count, int write_per_thread) {
 	pthread_t arr[100];
 
 	for (int i = 0; i < thread_count; i++) {
-		if (pthread_create(&arr[i], NULL, (void*(*)(void*))test_queue_lf_writer, (void*)(write_per_thread)))
-		{
+		if (pthread_create(&arr[i], NULL, (void*(*)(void*))test_queue_lf_writer, (void*)(write_per_thread))) {
 			fprintf(stderr, "Error on creating thread :/\n");
 			exit (-1);
 		}
