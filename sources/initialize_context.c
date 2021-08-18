@@ -104,7 +104,7 @@ static int	initialize_philos(t_context *ctx)
 
 static int	detach_philos(t_context *ctx)
 {
-	int		i;
+	size_t		i;
 
 	i = 0;
 	while (i < ctx->number_of_philos)

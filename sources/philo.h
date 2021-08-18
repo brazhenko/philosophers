@@ -48,7 +48,7 @@ struct s_philo_context
 	enum e_status	status;
 };
 
-typedef struct s_context		t_context;
-typedef struct s_philo_context	t_philo_context;
+typedef struct s_context			t_context;
+typedef struct s_philo_context		t_philo_context;
 
 #endif
