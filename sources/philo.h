@@ -20,7 +20,7 @@ enum e_status
 	AllAteNTimes
 };
 
-struct s_context
+typedef struct s_context
 {
 	size_t		number_of_philos;
 	t_usec		time_to_die;
@@ -32,9 +32,9 @@ struct s_context
 	pthread_t	*philos;
 	t_fork		*forks_real_ptr;
 	t_fork		*forks;
-};
+}				t_context;
 
-struct s_philo_context
+typedef struct s_philo_context
 {
 	size_t			id;
 	uint64_t		label;
@@ -46,9 +46,6 @@ struct s_philo_context
 	t_usec			last_time_awake;
 	t_usec			end_of_action;
 	enum e_status	status;
-};
-
-typedef struct s_context			t_context;
-typedef struct s_philo_context		t_philo_context;
+}				t_philo_context;
 
 #endif

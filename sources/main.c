@@ -58,7 +58,7 @@ static void	dump_event(struct s_philo_event *ev)
 {
 	const char	*ev_type_string;
 	const char	*event_color = ANSI_COLOR_RESET;
-	size_t			i;
+	size_t		i;
 
 	i = 0;
 	while (i < sizeof g_evm / sizeof g_evm[0])
