@@ -2,3 +2,6 @@
 a.out*
 cmake-build*
 .DS_Store
+**/*.d
+**/*.o
+**/philo
