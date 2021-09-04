@@ -25,11 +25,9 @@ void	philo_sync(t_philo_context *ctx)
 	if (ctx->status == Thinking
 		&& ctx->last_time_ate + g_context.time_to_die <= ctx->timestamp
 		&& ctx->first_fork == ctx->second_fork)
-	{
 		philo_die(ctx);
-	}
 	else if (ctx->status == Thinking
-		&& ctx->last_time_ate + g_context.time_to_die <= ctx->timestamp)
+		&& ctx->last_time_ate + g_context.time_to_die < ctx->timestamp)
 	{
 		if (ctx->last_time_ate + g_context.time_to_die < ts1
 			|| ctx->last_time_ate + g_context.time_to_die < ts2)
@@ -38,12 +36,14 @@ void	philo_sync(t_philo_context *ctx)
 			philo_die(ctx);
 		}
 	}
-	else if (ctx->status == Eating
-		 && ctx->last_time_ate + g_context.time_to_die <= ctx->timestamp)
+	else if ((ctx->status == Eating
+			&& ctx->last_time_ate + g_context.time_to_die < ctx->timestamp)
+		 || (ctx->status == Sleeping
+			 && ctx->last_time_ate + g_context.time_to_die < ctx->timestamp))
+	{
+		ctx->timestamp = ctx->last_time_ate + g_context.time_to_die;
 		philo_die(ctx);
-	else if (ctx->status == Sleeping
-		 && ctx->last_time_ate + g_context.time_to_die <= ctx->timestamp)
-		philo_die(ctx);
+	}
 }
 
 void	philo_init(t_philo_context *ctx, size_t id)
